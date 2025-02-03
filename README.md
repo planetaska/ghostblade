@@ -1,8 +1,9 @@
 # Ghostblade: Shinobi Gauntlet
 A command-line maze adventure game written in Rust
 
-![Game Demo](screenshots/demo.png)
-*(Screenshot coming soon)*
+![Game UI](screenshots/game-ui.png)
+
+*(Temporary image)*
 
 ## About
 Ghostblade is a stealth-based maze crawler where you play as a ninja infiltrating a heavily guarded castle. Navigate through increasingly complex levels, avoid patrols, and use various tools and mechanics to reach the objective.

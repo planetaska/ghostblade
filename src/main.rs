@@ -16,7 +16,7 @@ use std::time::{Duration, Instant};
 mod classes;
 
 use classes::game::Game;
-use classes::player::Player;
+// use classes::player::Player;
 
 fn main() -> io::Result<()> {
     // Initialize game state
@@ -27,8 +27,8 @@ fn main() -> io::Result<()> {
     enable_raw_mode()?;
 
     // Game loop timing
-    let frame_duration = Duration::from_millis(16); // ~60 FPS
-    // let frame_duration = Duration::from_millis(160); // ~60 FPS
+    // let frame_duration = Duration::from_millis(16); // ~60 FPS
+    let frame_duration = Duration::from_millis(160); // ~6 FPS
     let enemy_move_interval = Duration::from_millis(500);
     let mut last_enemy_move = Instant::now();
 
@@ -65,6 +65,7 @@ fn main() -> io::Result<()> {
                         player.reset_position(game.get_player_start());
                     } else {
                         // Game completed
+                        game.handle_game_clear();
                         break 'game_loop;
                     }
                 },

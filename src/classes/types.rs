@@ -1,7 +1,7 @@
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Position {
-    pub row: u16,
-    pub col: u16,
+    pub row: i16,
+    pub col: i16,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

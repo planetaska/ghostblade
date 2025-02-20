@@ -1,9 +1,10 @@
 use crossterm::{
     cursor::{Hide, MoveTo},
     terminal::{Clear, ClearType},
-    style::Print,
-    queue,
-    ExecutableCommand, QueueableCommand
+    ExecutableCommand,
+    // style::Print,
+    // queue,
+    // QueueableCommand
 };
 use std::io::{stdout, Write};
 use crate::classes::types::{Position, TileType};
@@ -28,7 +29,7 @@ impl UI {
         for (row, row_tiles) in level.map.iter().enumerate() {
             let mut line = String::new();
             for (col, tile) in row_tiles.iter().enumerate() {
-                let pos = Position { row: row as u16, col: col as u16 };
+                let pos = Position { row: row as i16, col: col as i16 };
 
                 let char = if pos == player.pos {
                     "🥷"
@@ -75,7 +76,7 @@ impl UI {
     //
     //     for (row, row_tiles) in level.map.iter().enumerate() {
     //         for (col, tile) in row_tiles.iter().enumerate() {
-    //             let pos = Position { row: row as u16, col: col as u16 };
+    //             let pos = Position { row: row as i16, col: col as i16 };
     //
     //             // print!("{},{}", row, col);
     //             queue!(stdout, MoveTo(pos.col, pos.row));
@@ -111,7 +112,15 @@ impl UI {
     // }
 
     pub fn show_death_message(&self) {
-        println!("    ☠️  You died ☠️");
+        self.show_message("    ☠️  You died ☠️");
+    }
+
+    pub fn show_game_clear_message(&self) {
+        self.show_message("   🎊 Game clear 🎊");
+    }
+
+    fn show_message(&self, message: &str) {
+        println!("{}", message);
         std::thread::sleep(std::time::Duration::from_secs(1));
     }
 }

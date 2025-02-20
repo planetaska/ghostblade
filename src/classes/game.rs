@@ -14,7 +14,7 @@ pub struct Game {
 impl Game {
     pub fn new() -> Self {
         let current_level = 1;
-        let max_levels = 2;
+        let max_levels = 3;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
 
@@ -34,8 +34,8 @@ impl Game {
 
     pub fn check_collision(&self, pos: &Position) -> CollisionType {
         // Check bounds
-        if pos.row < 0 || pos.row >= self.level.map.len() as u16 ||
-            pos.col < 0 || pos.col >= self.level.map[0].len() as u16 {
+        if pos.row < 0 || pos.row >= self.level.map_size.0 as i16 ||
+            pos.col < 0 || pos.col >= self.level.map_size.1 as i16 {
             return CollisionType::OutOfBounds;
         }
 
@@ -65,9 +65,8 @@ impl Game {
             if rng.random_bool(0.8) {
                 let (dy, dx) = directions[rng.random_range(0..4)];
                 let new_pos = Position {
-                    // should fix this!
-                    row: (enemy.row as i16 + dy) as u16,
-                    col: (enemy.col as i16 + dx) as u16,
+                    row: enemy.row + dy,
+                    col: enemy.col + dx,
                 };
 
                 if self.check_collision(&new_pos) == CollisionType::None {
@@ -75,6 +74,8 @@ impl Game {
                 }
             }
         }
+
+        self.level.enemies = enemies;
     }
 
     pub fn advance_level(&mut self) -> bool {
@@ -97,6 +98,10 @@ impl Game {
 
     pub fn handle_player_death(&self) {
         self.ui.show_death_message();
+    }
+
+    pub fn handle_game_clear(&self) {
+        self.ui.show_game_clear_message();
     }
 
     pub fn render(&self, player: &Player) {

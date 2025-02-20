@@ -5,6 +5,7 @@ pub struct Level {
     pub map: Vec<Vec<TileType>>,
     pub enemies: Vec<Position>,
     pub player_start: Position,
+    pub map_size: (u8, u8),
     // pub goal: Position, // Did not need goal pos returned, as we have tile map
 }
 
@@ -26,15 +27,15 @@ impl Level {
                         's' => map_row.push(TileType::Empty),
                         'p' => {
                             map_row.push(TileType::Empty);
-                            player_start = Position { row: row as u16, col: col as u16 };
+                            player_start = Position { row: row as i16, col: col as i16 };
                         },
                         'e' => {
                             map_row.push(TileType::Empty);
-                            enemies.push(Position { row: row as u16, col: col as u16 });
+                            enemies.push(Position { row: row as i16, col: col as i16 });
                         },
                         'd' => {
                             map_row.push(TileType::Goal);
-                            // goal = Position { row: row as u16, col: col as u16 };
+                            // goal = Position { row: row as i16, col: col as i16 };
                         },
                         _ => map_row.push(TileType::Empty),
                     }
@@ -42,10 +43,13 @@ impl Level {
                 map.push(map_row);
             }
 
+            let map_size = (map.len() as u8, map[0].len() as u8);
+
             Some(Level {
                 map,
                 enemies,
                 player_start,
+                map_size,
                 // goal,
             })
         } else {

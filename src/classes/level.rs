@@ -25,6 +25,7 @@ impl Level {
                         't' => map_row.push(TileType::Wall),
                         'b' => map_row.push(TileType::Bamboo),
                         's' => map_row.push(TileType::Empty),
+                        'w' => map_row.push(TileType::Water),
                         'p' => {
                             map_row.push(TileType::Empty);
                             player_start = Position { row: row as i16, col: col as i16 };

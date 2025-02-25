@@ -18,6 +18,7 @@ pub enum TileType {
     Empty,
     Wall,
     Bamboo,
+    Water,
     Goal,
     // Hook,
     // Bridge,

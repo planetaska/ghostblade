@@ -41,7 +41,8 @@ impl Game {
 
         // Check static obstacles
         match self.level.map[pos.row as usize][pos.col as usize] {
-            TileType::Wall | TileType::Bamboo => return CollisionType::Wall,
+            TileType::Wall | TileType::Bamboo | TileType::Water
+            => return CollisionType::Wall,
             TileType::Goal => return CollisionType::Goal,
             _ => {}
         }

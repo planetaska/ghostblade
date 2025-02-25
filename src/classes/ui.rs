@@ -40,6 +40,7 @@ impl UI {
                         TileType::Empty => "・",
                         TileType::Wall => "🌲",
                         TileType::Bamboo => "🎋",
+                        TileType::Water => "🟦",
                         TileType::Goal => "🏯",
                         // TileType::Hook => "🪝",
                         // TileType::Bridge => "🪵",

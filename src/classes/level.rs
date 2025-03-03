@@ -28,7 +28,7 @@ impl Level {
                         'w' => map_row.push(TileType::Water),
                         'a' => map_row.push(TileType::Axe),
                         'l' => map_row.push(TileType::WoodLog),
-                        '=' => map_row.push(TileType::Canoe),
+                        'c' => map_row.push(TileType::Canoe),
                         'p' => {
                             map_row.push(TileType::Empty);
                             player_start = Position { row: row as i16, col: col as i16 };
@@ -56,6 +56,22 @@ impl Level {
                 map_size,
                 // goal,
             })
+        } else {
+            None
+        }
+    }
+
+    pub fn set_tile(&mut self, pos: &Position, tile_type: TileType) {
+        if pos.row >= 0 && pos.row < self.map_size.0 as i16 &&
+            pos.col >= 0 && pos.col < self.map_size.1 as i16 {
+            self.map[pos.row as usize][pos.col as usize] = tile_type;
+        }
+    }
+
+    pub fn get_tile(&self, pos: &Position) -> Option<TileType> {
+        if pos.row >= 0 && pos.row < self.map_size.0 as i16 &&
+            pos.col >= 0 && pos.col < self.map_size.1 as i16 {
+            Some(self.map[pos.row as usize][pos.col as usize])
         } else {
             None
         }

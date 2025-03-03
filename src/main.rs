@@ -17,6 +17,7 @@ mod classes;
 
 use classes::game::Game;
 // use classes::player::Player;
+use classes::types::CollisionType;
 
 fn main() -> io::Result<()> {
     // Initialize game state
@@ -72,6 +73,10 @@ fn main() -> io::Result<()> {
                 classes::types::CollisionType::Enemy => {
                     game.handle_player_death();
                     player.reset_position(game.get_player_start());
+                },
+                CollisionType::Item | CollisionType::WoodLog => {
+                    // Handle interactions with items and obstacles
+                    game.handle_interaction(&mut player);
                 },
                 _ => player.cancel_move(),
             }

@@ -2,12 +2,9 @@ use crossterm::{
     cursor::{Hide, MoveTo},
     terminal::{Clear, ClearType},
     ExecutableCommand,
-    // style::Print,
-    // queue,
-    // QueueableCommand
 };
 use std::io::{stdout, Write};
-use crate::classes::types::{Position, TileType};
+use crate::classes::types::{Position, TileType, ItemType};
 use crate::classes::level::Level;
 use crate::classes::player::Player;
 
@@ -53,66 +50,29 @@ impl UI {
             }
             line.push_str("\r\n");
             frame.push_str(&line);
-            // frame.push('\n'); // go to next line
-            // frame.push('\r'); // carriage return
         }
+
+        // Add inventory display below the map
+        frame.push_str("\r\n   🎒 Inventory: ");
+        if player.inventory.is_empty() {
+            frame.push_str("Empty");
+        } else {
+            for item in &player.inventory {
+                let item_char = match item {
+                    ItemType::Axe => "🪓",
+                };
+                frame.push_str(item_char);
+                frame.push_str(" ");
+            }
+        }
+
+        frame.push_str("\r\n");
 
         // Write the complete frame at once
         // print!("{}", frame);
         write!(stdout, "{}", frame).unwrap();
         stdout.flush().unwrap();
     }
-
-    // pub fn render(&self, level: &Level, player: &Player) {
-    //     let mut stdout = stdout();
-    //     // stdout.execute(Clear(ClearType::All)).unwrap();
-    //     // stdout.execute(MoveTo(0, 0)).unwrap();
-    //     // stdout.execute(Hide).unwrap();
-    //     // stdout.execute(Print("Styled text here.")).unwrap();
-    //
-    //     queue!(stdout, Clear(ClearType::All));
-    //     queue!(stdout, MoveTo(0, 0));
-    //     queue!(stdout, Hide);
-    //     // queue!(stdout, Print("Styled text here."));
-    //
-    //     // print!("a");
-    //
-    //     for (row, row_tiles) in level.map.iter().enumerate() {
-    //         for (col, tile) in row_tiles.iter().enumerate() {
-    //             let pos = Position { row: row as i16, col: col as i16 };
-    //
-    //             // print!("{},{}", row, col);
-    //             queue!(stdout, MoveTo(pos.col, pos.row));
-    //             // stdout.execute(MoveTo(pos.col, pos.row)).unwrap();
-    //
-    //             if pos == player.pos {
-    //                 // print!("🥷");
-    //                 queue!(stdout, Print("🥷"));
-    //             } else if level.enemies.contains(&pos) {
-    //                 // print!("🧌");
-    //                 queue!(stdout, Print("🧌"));
-    //             } else {
-    //                 match tile {
-    //                     TileType::Empty => queue!(stdout, Print("・")),
-    //                     TileType::Wall => queue!(stdout, Print("🌲")),
-    //                     TileType::Bamboo => queue!(stdout, Print("🎋")),
-    //                     TileType::Goal => queue!(stdout, Print("🏯")),
-    //                     // TileType::Empty => print!("・"),
-    //                     // TileType::Wall => print!("🌲"),
-    //                     // TileType::Bamboo => print!("🎋"),
-    //                     // TileType::Goal => print!("🏯"),
-    //                     // TileType::Hook => print!("🪝"),
-    //                     // TileType::Bridge => print!("🪵"),
-    //                     // TileType::Door => print!("🚪"),
-    //                 }
-    //             }
-    //         }
-    //         // print!("\r\n");
-    //         // println!();
-    //     }
-    //
-    //     stdout.flush().unwrap();
-    // }
 
     pub fn show_death_message(&self) {
         self.show_message("    ☠️  You died ☠️");

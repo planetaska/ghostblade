@@ -9,6 +9,8 @@ pub enum CollisionType {
     None,
     Wall,
     Enemy,
+    Item,
+    WoodLog,
     Goal,
     OutOfBounds,
 }
@@ -19,8 +21,15 @@ pub enum TileType {
     Wall,
     Bamboo,
     Water,
+    Axe,
+    WoodLog,
+    Canoe,
     Goal,
     // Hook,
-    // Bridge,
     // Door,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ItemType {
+    Axe,
 }

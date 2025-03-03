@@ -1,10 +1,10 @@
 tttttttttttttttttttttt
-tsssssbsswtsssssbssstt
-tssssssesswsssssssdsst
-tpsssssesswtssssssesst
-tssbsssssswtssbsssssst
-tssbsssssss=ssbsssssst
+tsssssbsswtssssstssstt
+tssssssesswsssssttdsst
+tpsssssesswtssssstesst
+tssbsssssswtssbssbssst
+tssbsssssslwssbssbssst
 tssssssbssttwsbsssssst
-tssbsssbssssswbsssssst
-tsssbssbssttswbsssssst
+tssbsssbssssswtsssssst
+tssabssbssttswttssssst
 tttttttttttttttttttttt

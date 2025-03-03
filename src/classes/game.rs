@@ -1,4 +1,4 @@
-use crate::classes::types::{TileType, CollisionType, Position};
+use crate::classes::types::{TileType, CollisionType, Position, ItemType};
 use crate::classes::player::Player;
 use crate::classes::level::Level;
 use crate::classes::ui::UI;
@@ -13,7 +13,7 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 1;
+        let current_level = 3;
         let max_levels = 3;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
@@ -44,6 +44,8 @@ impl Game {
             TileType::Wall | TileType::Bamboo | TileType::Water
             => return CollisionType::Wall,
             TileType::Goal => return CollisionType::Goal,
+            TileType::Axe => return CollisionType::Item,
+            TileType::WoodLog => return CollisionType::WoodLog,
             _ => {}
         }
 
@@ -53,6 +55,59 @@ impl Game {
         }
 
         CollisionType::None
+    }
+
+    pub fn handle_interaction(&mut self, player: &mut Player) {
+        // If there's a pending move, check for interactions
+        if let Some(new_pos) = player.get_pending_move() {
+            match self.check_collision(&new_pos) {
+                CollisionType::Item => {
+                    // Get the tile at the new position
+                    let tile_type = self.level.map[new_pos.row as usize][new_pos.col as usize];
+
+                    // Handle item pickup based on tile type
+                    match tile_type {
+                        TileType::Axe => {
+                            player.add_item(ItemType::Axe);
+                            // Remove the axe from the map
+                            self.level.map[new_pos.row as usize][new_pos.col as usize] = TileType::Empty;
+                            // Allow movement to this tile
+                            player.commit_move();
+                        },
+                        _ => {}
+                    }
+                },
+                CollisionType::WoodLog => {
+                    // Check if player has axe
+                    if player.has_item(ItemType::Axe) {
+                        // Find the water tile to the right of the log
+                        let water_pos = Position {
+                            row: new_pos.row,
+                            col: new_pos.col + 1,
+                        };
+
+                        // Check if the tile to the right is water
+                        if let Some(tile) = self.level.get_tile(&water_pos) {
+                            if tile == TileType::Water {
+                                // Convert the water tile to a canoe
+                                self.level.set_tile(&water_pos, TileType::Canoe);
+                                // Clear the wood log by converting it to empty space
+                                self.level.set_tile(&new_pos, TileType::Empty);
+                                // Remove the axe from inventory (it's consumed by use)
+                                // self.remove_item_from_player(player, ItemType::Axe);
+                                player.remove_item(ItemType::Axe);
+                                // Player can't move onto the wood log
+                                player.cancel_move();
+                            }
+                        }
+                    } else {
+                        // Can't interact with wood log without axe
+                        player.cancel_move();
+                    }
+                },
+                _ => {}
+            }
+        }
     }
 
     pub fn update_enemies(&mut self) {
@@ -92,6 +147,12 @@ impl Game {
             false
         }
     }
+
+    // fn remove_item_from_player(&self, player: &mut Player, item: ItemType) {
+    //     if let Some(index) = player.inventory.iter().position(|&i| i == item) {
+    //         player.inventory.remove(index);
+    //     }
+    // }
 
     pub fn get_player_start(&self) -> Position {
         self.level.player_start

@@ -1,8 +1,9 @@
-use crate::classes::types::Position;
+use crate::classes::types::{Position, ItemType};
 
 pub struct Player {
     pub pos: Position,
     pending_move: Option<Position>,
+    pub inventory: Vec<ItemType>,
 }
 
 impl Player {
@@ -10,6 +11,7 @@ impl Player {
         Self {
             pos: Position { row: 0, col: 0 },
             pending_move: None,
+            inventory: Vec::new(),
         }
     }
 
@@ -59,5 +61,19 @@ impl Player {
 
     pub fn cancel_move(&mut self) {
         self.pending_move = None;
+    }
+
+    pub fn add_item(&mut self, item: ItemType) {
+        self.inventory.push(item);
+    }
+
+    pub fn has_item(&self, item: ItemType) -> bool {
+        self.inventory.contains(&item)
+    }
+
+    pub fn remove_item(&mut self, item: ItemType) {
+        if let Some(index) = self.inventory.iter().position(|&i| i == item) {
+            self.inventory.remove(index);
+        }
     }
 }

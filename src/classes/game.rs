@@ -13,7 +13,7 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 1;
+        let current_level = 3;
         let max_levels = 3;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();

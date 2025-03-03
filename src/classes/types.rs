@@ -9,6 +9,7 @@ pub enum CollisionType {
     None,
     Wall,
     Enemy,
+    Item,
     Goal,
     OutOfBounds,
 }
@@ -19,7 +20,9 @@ pub enum TileType {
     Wall,
     Bamboo,
     Water,
-    Bridge,
+    Axe,
+    WoodLog,
+    Canoe,
     Goal,
     // Hook,
     // Door,

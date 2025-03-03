@@ -42,8 +42,8 @@ impl UI {
                         TileType::Bamboo => "🎋",
                         TileType::Water => "🟦",
                         TileType::Goal => "🏯",
+                        TileType::Bridge => "🪵",
                         // TileType::Hook => "🪝",
-                        // TileType::Bridge => "🪵",
                         // TileType::Door => "🚪",
                     }
                 };

@@ -13,8 +13,8 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 3;
-        let max_levels = 3;
+        let current_level = 4;
+        let max_levels = 4;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
 
@@ -44,7 +44,7 @@ impl Game {
             TileType::Wall | TileType::Bamboo | TileType::Water
             => return CollisionType::Wall,
             TileType::Goal => return CollisionType::Goal,
-            TileType::Axe => return CollisionType::Item,
+            TileType::Axe | TileType::Sword => return CollisionType::Item,
             TileType::WoodLog => return CollisionType::WoodLog,
             _ => {}
         }
@@ -70,6 +70,13 @@ impl Game {
                         TileType::Axe => {
                             player.add_item(ItemType::Axe);
                             // Remove the axe from the map
+                            self.level.map[new_pos.row as usize][new_pos.col as usize] = TileType::Empty;
+                            // Allow movement to this tile
+                            player.commit_move();
+                        },
+                        TileType::Sword => {
+                            player.add_item(ItemType::Sword);
+                            // Remove the sword from the map
                             self.level.map[new_pos.row as usize][new_pos.col as usize] = TileType::Empty;
                             // Allow movement to this tile
                             player.commit_move();
@@ -105,9 +112,33 @@ impl Game {
                         player.cancel_move();
                     }
                 },
+                CollisionType::Enemy => {
+                    // Check if player has sword
+                    if player.has_item(ItemType::Sword) {
+                        // Get enemy position
+                        let enemy_pos = new_pos;
+
+                        // Remove enemy at this position
+                        self.remove_enemy(&enemy_pos);
+
+                        // Consume the sword (one-time use)
+                        player.remove_item(ItemType::Sword);
+
+                        // Allow player to move to the enemy position
+                        player.commit_move();
+                    } else {
+                        // Without sword, player dies on enemy collision
+                        self.handle_player_death();
+                        player.reset_position(self.get_player_start());
+                    }
+                },
                 _ => {}
             }
         }
+    }
+
+    pub fn remove_enemy(&mut self, pos: &Position) {
+        self.level.enemies.retain(|enemy| enemy != pos);
     }
 
     pub fn update_enemies(&mut self) {
@@ -147,12 +178,6 @@ impl Game {
             false
         }
     }
-
-    // fn remove_item_from_player(&self, player: &mut Player, item: ItemType) {
-    //     if let Some(index) = player.inventory.iter().position(|&i| i == item) {
-    //         player.inventory.remove(index);
-    //     }
-    // }
 
     pub fn get_player_start(&self) -> Position {
         self.level.player_start

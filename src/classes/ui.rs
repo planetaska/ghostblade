@@ -42,6 +42,7 @@ impl UI {
                         TileType::Axe => "🪓",
                         TileType::WoodLog => "🪵",
                         TileType::Canoe => "🛶",
+                        TileType::Sword => "🗡",
                         // TileType::Hook => "🪝",
                         // TileType::Door => "🚪",
                     }
@@ -60,6 +61,7 @@ impl UI {
             for item in &player.inventory {
                 let item_char = match item {
                     ItemType::Axe => "🪓",
+                    ItemType::Sword => "🗡",
                 };
                 frame.push_str(item_char);
                 frame.push_str(" ");

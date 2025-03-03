@@ -24,6 +24,7 @@ pub enum TileType {
     Axe,
     WoodLog,
     Canoe,
+    Sword,
     Goal,
     // Hook,
     // Door,
@@ -32,4 +33,5 @@ pub enum TileType {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ItemType {
     Axe,
+    Sword,
 }

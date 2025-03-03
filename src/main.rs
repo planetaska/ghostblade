@@ -71,8 +71,8 @@ fn main() -> io::Result<()> {
                     }
                 },
                 classes::types::CollisionType::Enemy => {
-                    game.handle_player_death();
-                    player.reset_position(game.get_player_start());
+                    // Handle enemy interaction in game.handle_interaction
+                    game.handle_interaction(&mut player);
                 },
                 CollisionType::Item | CollisionType::WoodLog => {
                     // Handle interactions with items and obstacles

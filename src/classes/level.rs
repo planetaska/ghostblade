@@ -29,6 +29,7 @@ impl Level {
                         'a' => map_row.push(TileType::Axe),
                         'l' => map_row.push(TileType::WoodLog),
                         'c' => map_row.push(TileType::Canoe),
+                        '+' => map_row.push(TileType::Sword),
                         'p' => {
                             map_row.push(TileType::Empty);
                             player_start = Position { row: row as i16, col: col as i16 };

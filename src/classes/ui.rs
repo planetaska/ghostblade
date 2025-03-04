@@ -54,7 +54,7 @@ impl UI {
         }
 
         // Add inventory display below the map
-        frame.push_str("\r\n   🎒 Inventory: ");
+        frame.push_str(" 🎒 Inventory: ");
         if player.inventory.is_empty() {
             frame.push_str("Empty");
         } else {
@@ -69,6 +69,7 @@ impl UI {
         }
 
         frame.push_str("\r\n");
+        frame.push_str(" wsad: Move | q: Quit");
 
         // Write the complete frame at once
         // print!("{}", frame);

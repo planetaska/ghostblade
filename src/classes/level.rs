@@ -1,5 +1,5 @@
-use std::fs;
 use crate::classes::types::{Position, TileType};
+use std::fs;
 
 pub struct Level {
     pub map: Vec<Vec<TileType>>,
@@ -32,16 +32,22 @@ impl Level {
                         '+' => map_row.push(TileType::Sword),
                         'p' => {
                             map_row.push(TileType::Empty);
-                            player_start = Position { row: row as i16, col: col as i16 };
-                        },
+                            player_start = Position {
+                                row: row as i16,
+                                col: col as i16,
+                            };
+                        }
                         'e' => {
                             map_row.push(TileType::Empty);
-                            enemies.push(Position { row: row as i16, col: col as i16 });
-                        },
+                            enemies.push(Position {
+                                row: row as i16,
+                                col: col as i16,
+                            });
+                        }
                         'd' => {
                             map_row.push(TileType::Goal);
                             // goal = Position { row: row as i16, col: col as i16 };
-                        },
+                        }
                         _ => map_row.push(TileType::Empty),
                     }
                 }
@@ -63,15 +69,21 @@ impl Level {
     }
 
     pub fn set_tile(&mut self, pos: &Position, tile_type: TileType) {
-        if pos.row >= 0 && pos.row < self.map_size.0 as i16 &&
-            pos.col >= 0 && pos.col < self.map_size.1 as i16 {
+        if pos.row >= 0
+            && pos.row < self.map_size.0 as i16
+            && pos.col >= 0
+            && pos.col < self.map_size.1 as i16
+        {
             self.map[pos.row as usize][pos.col as usize] = tile_type;
         }
     }
 
     pub fn get_tile(&self, pos: &Position) -> Option<TileType> {
-        if pos.row >= 0 && pos.row < self.map_size.0 as i16 &&
-            pos.col >= 0 && pos.col < self.map_size.1 as i16 {
+        if pos.row >= 0
+            && pos.row < self.map_size.0 as i16
+            && pos.col >= 0
+            && pos.col < self.map_size.1 as i16
+        {
             Some(self.map[pos.row as usize][pos.col as usize])
         } else {
             None

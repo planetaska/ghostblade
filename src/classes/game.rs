@@ -1,6 +1,6 @@
-use crate::classes::types::{TileType, CollisionType, Position, ItemType};
-use crate::classes::player::Player;
 use crate::classes::level::Level;
+use crate::classes::player::Player;
+use crate::classes::types::{CollisionType, ItemType, Position, TileType};
 use crate::classes::ui::UI;
 use rand::Rng;
 
@@ -34,15 +34,17 @@ impl Game {
 
     pub fn check_collision(&self, pos: &Position) -> CollisionType {
         // Check bounds
-        if pos.row < 0 || pos.row >= self.level.map_size.0 as i16 ||
-            pos.col < 0 || pos.col >= self.level.map_size.1 as i16 {
+        if pos.row < 0
+            || pos.row >= self.level.map_size.0 as i16
+            || pos.col < 0
+            || pos.col >= self.level.map_size.1 as i16
+        {
             return CollisionType::OutOfBounds;
         }
 
         // Check static obstacles
         match self.level.map[pos.row as usize][pos.col as usize] {
-            TileType::Wall | TileType::Bamboo | TileType::Water
-            => return CollisionType::Wall,
+            TileType::Wall | TileType::Bamboo | TileType::Water => return CollisionType::Wall,
             TileType::Goal => return CollisionType::Goal,
             TileType::Axe | TileType::Sword => return CollisionType::Item,
             TileType::WoodLog => return CollisionType::WoodLog,
@@ -70,20 +72,22 @@ impl Game {
                         TileType::Axe => {
                             player.add_item(ItemType::Axe);
                             // Remove the axe from the map
-                            self.level.map[new_pos.row as usize][new_pos.col as usize] = TileType::Empty;
+                            self.level.map[new_pos.row as usize][new_pos.col as usize] =
+                                TileType::Empty;
                             // Allow movement to this tile
                             player.commit_move();
-                        },
+                        }
                         TileType::Sword => {
                             player.add_item(ItemType::Sword);
                             // Remove the sword from the map
-                            self.level.map[new_pos.row as usize][new_pos.col as usize] = TileType::Empty;
+                            self.level.map[new_pos.row as usize][new_pos.col as usize] =
+                                TileType::Empty;
                             // Allow movement to this tile
                             player.commit_move();
-                        },
+                        }
                         _ => {}
                     }
-                },
+                }
                 CollisionType::WoodLog => {
                     // Check if player has axe
                     if player.has_item(ItemType::Axe) {
@@ -111,7 +115,7 @@ impl Game {
                         // Can't interact with wood log without axe
                         player.cancel_move();
                     }
-                },
+                }
                 CollisionType::Enemy => {
                     // Check if player has sword
                     if player.has_item(ItemType::Sword) {
@@ -131,7 +135,7 @@ impl Game {
                         self.handle_player_death();
                         player.reset_position(self.get_player_start());
                     }
-                },
+                }
                 _ => {}
             }
         }

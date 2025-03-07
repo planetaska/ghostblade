@@ -1,4 +1,4 @@
-use crate::classes::types::{Position, ItemType};
+use crate::classes::types::{ItemType, Position};
 
 pub struct Player {
     pub pos: Position,

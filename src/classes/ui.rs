@@ -1,12 +1,12 @@
+use crate::classes::level::Level;
+use crate::classes::player::Player;
+use crate::classes::types::{ItemType, Position, TileType};
 use crossterm::{
     cursor::{Hide, MoveTo},
     terminal::{Clear, ClearType},
     ExecutableCommand,
 };
 use std::io::{stdout, Write};
-use crate::classes::types::{Position, TileType, ItemType};
-use crate::classes::level::Level;
-use crate::classes::player::Player;
 
 pub struct UI {}
 
@@ -26,7 +26,10 @@ impl UI {
         for (row, row_tiles) in level.map.iter().enumerate() {
             let mut line = String::new();
             for (col, tile) in row_tiles.iter().enumerate() {
-                let pos = Position { row: row as i16, col: col as i16 };
+                let pos = Position {
+                    row: row as i16,
+                    col: col as i16,
+                };
 
                 let char = if pos == player.pos {
                     "🥷"
@@ -64,7 +67,7 @@ impl UI {
                     ItemType::Sword => "🗡",
                 };
                 frame.push_str(item_char);
-                frame.push_str(" ");
+                frame.push(' ');
             }
         }
 

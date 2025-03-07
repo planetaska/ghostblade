@@ -1,10 +1,10 @@
 // Crate crossterm: Cross-platform Terminal Manipulation Library
 // https://docs.rs/crossterm/latest/crossterm/
-use std::io;
 use crossterm::{
     event::{self, Event, KeyCode},
     terminal::{disable_raw_mode, enable_raw_mode},
 };
+use std::io;
 use std::time::{Duration, Instant};
 
 // mod game;
@@ -69,15 +69,15 @@ fn main() -> io::Result<()> {
                         game.handle_game_clear();
                         break 'game_loop;
                     }
-                },
+                }
                 classes::types::CollisionType::Enemy => {
                     // Handle enemy interaction in game.handle_interaction
                     game.handle_interaction(&mut player);
-                },
+                }
                 CollisionType::Item | CollisionType::WoodLog => {
                     // Handle interactions with items and obstacles
                     game.handle_interaction(&mut player);
-                },
+                }
                 _ => player.cancel_move(),
             }
         }

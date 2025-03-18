@@ -40,14 +40,17 @@ impl UI {
                         TileType::Empty => "・",
                         TileType::Wall => "🌲",
                         TileType::Bamboo => "🎋",
+                        TileType::Mountain => "⛰️\u{200B}",
                         TileType::Water => "🟦",
                         TileType::Goal => "🏯",
                         TileType::Axe => "🪓",
                         TileType::WoodLog => "🪵",
                         TileType::Canoe => "🛶",
-                        TileType::Sword => "🗡",
+                        TileType::Sword => "🗡\u{200B}",
+                        TileType::Key => "🗝️\u{200B}",
+                        TileType::Door => "🚪",
+                        TileType::DoorOpen => "⛩️\u{200B}",
                         // TileType::Hook => "🪝",
-                        // TileType::Door => "🚪",
                     }
                 };
                 line.push_str(char);
@@ -64,7 +67,8 @@ impl UI {
             for item in &player.inventory {
                 let item_char = match item {
                     ItemType::Axe => "🪓",
-                    ItemType::Sword => "🗡",
+                    ItemType::Sword => "🗡\u{200B}",
+                    ItemType::Key => "🗝️\u{200B}",
                 };
                 frame.push_str(item_char);
                 frame.push(' ');

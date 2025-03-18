@@ -31,6 +31,12 @@ cargo build --release
 cargo run --release
 ```
 
+## Terminal Unicode Width Concerns
+Emojis may appear as half-width due to Unicode classifications, terminal behavior, or font rendering differences.
+To ensure consistent display, this program uses the Zero Width Space (`\u{200B}`) to adjust emoji width in certain terminals and fonts.
+In most cases, this should not cause issues.
+However, if the screen appears misaligned, try changing the terminal font for better compatibility.
+
 ## How to Play
 - Use `WASD` or arrow keys to move
 - `E` to interact with objects

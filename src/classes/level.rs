@@ -24,12 +24,15 @@ impl Level {
                     match c {
                         't' => map_row.push(TileType::Wall),
                         'b' => map_row.push(TileType::Bamboo),
+                        'm' => map_row.push(TileType::Mountain),
                         's' => map_row.push(TileType::Empty),
                         'w' => map_row.push(TileType::Water),
                         'a' => map_row.push(TileType::Axe),
                         'l' => map_row.push(TileType::WoodLog),
                         'c' => map_row.push(TileType::Canoe),
                         '+' => map_row.push(TileType::Sword),
+                        'k' => map_row.push(TileType::Key),
+                        'd' => map_row.push(TileType::Door),
                         'p' => {
                             map_row.push(TileType::Empty);
                             player_start = Position {
@@ -44,7 +47,7 @@ impl Level {
                                 col: col as i16,
                             });
                         }
-                        'd' => {
+                        'g' => {
                             map_row.push(TileType::Goal);
                             // goal = Position { row: row as i16, col: col as i16 };
                         }

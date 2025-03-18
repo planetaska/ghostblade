@@ -74,7 +74,7 @@ fn main() -> io::Result<()> {
                     // Handle enemy interaction in game.handle_interaction
                     game.handle_interaction(&mut player);
                 }
-                CollisionType::Item | CollisionType::WoodLog => {
+                CollisionType::Item | CollisionType::WoodLog | CollisionType::Door => {
                     // Handle interactions with items and obstacles
                     game.handle_interaction(&mut player);
                 }

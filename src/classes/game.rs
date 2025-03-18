@@ -13,8 +13,8 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 1;
-        let max_levels = 4;
+        let current_level = 5;
+        let max_levels = 5;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
 
@@ -44,10 +44,11 @@ impl Game {
 
         // Check static obstacles
         match self.level.map[pos.row as usize][pos.col as usize] {
-            TileType::Wall | TileType::Bamboo | TileType::Water => return CollisionType::Wall,
+            TileType::Wall | TileType::Bamboo | TileType::Water | TileType::Mountain => return CollisionType::Wall,
             TileType::Goal => return CollisionType::Goal,
-            TileType::Axe | TileType::Sword => return CollisionType::Item,
+            TileType::Axe | TileType::Sword | TileType::Key => return CollisionType::Item,
             TileType::WoodLog => return CollisionType::WoodLog,
+            TileType::Door => return CollisionType::Door,
             _ => {}
         }
 
@@ -85,6 +86,14 @@ impl Game {
                             // Allow movement to this tile
                             player.commit_move();
                         }
+                        TileType::Key => {
+                            player.add_item(ItemType::Key);
+                            // Remove the key from the map
+                            self.level.map[new_pos.row as usize][new_pos.col as usize] =
+                                TileType::Empty;
+                            // Allow movement to this tile
+                            player.commit_move();
+                        }
                         _ => {}
                     }
                 }
@@ -113,6 +122,17 @@ impl Game {
                         }
                     } else {
                         // Can't interact with wood log without axe
+                        player.cancel_move();
+                    }
+                }
+                CollisionType::Door => {
+                    // Check if player has key
+                    if player.has_item(ItemType::Key) {
+                        self.level.set_tile(&new_pos, TileType::DoorOpen);
+                        player.remove_item(ItemType::Key);
+                        player.cancel_move();
+                    } else {
+                        // Can't interact with door without key
                         player.cancel_move();
                     }
                 }

@@ -7,16 +7,9 @@ use crossterm::{
 use std::io;
 use std::time::{Duration, Instant};
 
-// mod game;
-// mod level;
-// mod player;
-// mod types;
-// mod ui;
-
 mod classes;
 
 use classes::game::Game;
-// use classes::player::Player;
 use classes::types::CollisionType;
 
 fn main() -> io::Result<()> {
@@ -60,8 +53,8 @@ fn main() -> io::Result<()> {
         // Process player movement and collisions
         if let Some(new_pos) = player.get_pending_move() {
             match game.check_collision(&new_pos) {
-                classes::types::CollisionType::None => player.commit_move(),
-                classes::types::CollisionType::Goal => {
+                CollisionType::None => player.commit_move(),
+                CollisionType::Goal => {
                     if game.advance_level() {
                         player.reset_position(game.get_player_start());
                     } else {
@@ -70,15 +63,14 @@ fn main() -> io::Result<()> {
                         break 'game_loop;
                     }
                 }
-                classes::types::CollisionType::Enemy => {
-                    // Handle enemy interaction in game.handle_interaction
+                CollisionType::Interactive(_) => {
+                    // Handle all interactive elements with a single case
                     game.handle_interaction(&mut player);
                 }
-                CollisionType::Item | CollisionType::WoodLog | CollisionType::Door => {
-                    // Handle interactions with items and obstacles
-                    game.handle_interaction(&mut player);
+                CollisionType::Blocking => {
+                    // All blocking elements (walls, mountains, water, etc.)
+                    player.cancel_move();
                 }
-                _ => player.cancel_move(),
             }
         }
 

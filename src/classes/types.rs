@@ -7,13 +7,28 @@ pub struct Position {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum CollisionType {
     None,
-    Wall,
-    Enemy,
-    Item,
+    Interactive(InteractiveType),
+    Blocking,
+    Goal,
+}
+
+// Specific types of interactive elements
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum InteractiveType {
+    Item(ItemType),
     WoodLog,
     Door,
-    Goal,
-    OutOfBounds,
+    Cottage,
+    Rock,
+    Enemy,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ItemType {
+    Axe,
+    Sword,
+    Key,
+    Bomb
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -30,13 +45,10 @@ pub enum TileType {
     Key,
     Door,
     DoorOpen,
+    Cottage,
+    Tomb,
+    Bomb,
+    Rock,
     Goal,
     // Hook,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum ItemType {
-    Axe,
-    Sword,
-    Key
 }

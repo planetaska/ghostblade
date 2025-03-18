@@ -25,6 +25,7 @@ impl Level {
                         't' => map_row.push(TileType::Wall),
                         'b' => map_row.push(TileType::Bamboo),
                         'm' => map_row.push(TileType::Mountain),
+                        'h' => map_row.push(TileType::Cottage),
                         's' => map_row.push(TileType::Empty),
                         'w' => map_row.push(TileType::Water),
                         'a' => map_row.push(TileType::Axe),
@@ -33,6 +34,7 @@ impl Level {
                         '+' => map_row.push(TileType::Sword),
                         'k' => map_row.push(TileType::Key),
                         'd' => map_row.push(TileType::Door),
+                        'r' => map_row.push(TileType::Rock),
                         'p' => {
                             map_row.push(TileType::Empty);
                             player_start = Position {

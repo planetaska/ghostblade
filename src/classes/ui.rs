@@ -50,6 +50,10 @@ impl UI {
                         TileType::Key => "🗝️\u{200B}",
                         TileType::Door => "🚪",
                         TileType::DoorOpen => "⛩️\u{200B}",
+                        TileType::Cottage => "🏚️\u{200B}",
+                        TileType::Tomb => "🪦",
+                        TileType::Rock => "🪨",
+                        TileType::Bomb => "💣",
                         // TileType::Hook => "🪝",
                     }
                 };
@@ -69,6 +73,7 @@ impl UI {
                     ItemType::Axe => "🪓",
                     ItemType::Sword => "🗡\u{200B}",
                     ItemType::Key => "🗝️\u{200B}",
+                    ItemType::Bomb => "💣",
                 };
                 frame.push_str(item_char);
                 frame.push(' ');

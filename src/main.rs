@@ -1,3 +1,28 @@
+//! The main entry point of the game.
+//!
+//! This function initializes the game state, sets up the terminal
+//! in raw mode, and runs the main game loop. The game loop handles
+//! user input, updates the game state, processes collisions, and renders
+//! the game at a fixed frame rate. It also handles level progression,
+//! interactions, and game completion.
+//!
+//! # Returns
+//!
+//! An `io::Result<()>` indicating whether the program ran successfully
+//! or not. Any I/O-related errors during terminal setup or event handling
+//! are returned.
+//!
+//! # Controls
+//! - `w` or `Arrow Up`: Move the player up.
+//! - `s` or `Arrow Down`: Move the player down.
+//! - `a` or `Arrow Left`: Move the player left.
+//! - `d` or `Arrow Right`: Move the player right.
+//! - `q` or `Escape`: Quit the game.
+//!
+//! # Cleanup
+//! Before exiting, this function ensures that the terminal is restored
+//! to its normal state by disabling raw mode.
+
 // Crate crossterm: Cross-platform Terminal Manipulation Library
 // https://docs.rs/crossterm/latest/crossterm/
 use crossterm::{

@@ -1,3 +1,40 @@
+//! The `UI` struct is responsible for handling the rendering of the game's user interface.
+//! It interacts with the terminal using the `crossterm` library for clear and dynamic updates.
+//!
+//! The UI includes:
+//! - Rendering the game map with various tiles, the player's position, and enemies.
+//! - Displaying the player's inventory below the map.
+//! - Showing control instructions.
+//! - Providing space for messages like death or victory notifications.
+//!
+//! ### Fields
+//! - `last_rendered_height`:
+//!   Tracks the last height where content was rendered in the terminal.
+//!   This is useful for positioning messages correctly.
+//!
+//! ### Methods
+//! - `UI::new()`:
+//!   Creates a new `UI` instance with default values.
+//!
+//! - `UI::render()`:
+//!   Renders the game map, player position, inventory, and controls within the terminal. Clears the terminal first
+//!   to ensure seamless and clean updates.
+//!
+//! - `UI::show_death_message()`:
+//!   Displays a "You died" message in the terminal.
+//!
+//! - `UI::show_game_clear_message()`:
+//!   Displays a "Game clear" message in the terminal.
+//!
+//! - `UI::show_message()`:
+//!   Displays a custom message at the correct screen position while temporarily pausing
+//!   the program to make the message visible for the user.
+//!
+//! ### Notes
+//! This struct heavily relies on the ANSI escape codes managed by the `crossterm` library to dynamically update the terminal output.
+//!
+//! The rendering logic primarily focuses on minimal terminal updates and user feedback during the game.
+
 use crate::classes::level::Level;
 use crate::classes::player::Player;
 use crate::classes::types::{ItemType, Position, TileType};
@@ -10,6 +47,12 @@ use std::io::{stdout, Write};
 
 pub struct UI {
     last_rendered_height: u16, // Track the last rendered height to know where to put messages
+}
+
+impl Default for UI {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl UI {

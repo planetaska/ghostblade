@@ -1,3 +1,59 @@
+//!
+//! The `Level` struct represents a game level and its associated properties,
+//! including a map layout, enemy positions, player starting position, and the
+//! map's dimensions. Levels are loaded from files with a specific format, allowing
+//! the dynamic creation of game environments.
+//!
+//! # Fields
+//! - `map`: A 2D vector of `TileType` that represents the physical layout of the level.
+//! - `enemies`: A vector of `Position` structs representing the positions of enemies in the level.
+//! - `player_start`: A `Position` indicating the starting position of the player.
+//! - `map_size`: A tuple `(u8, u8)` that specifies the number of rows and columns in the level map.
+//!
+//! # Methods
+//!
+//! ## `load`
+//! Loads a level from a file specified by its `level_number`.
+//!
+//! - File Path: The method looks for a file named `maps/level_<level_number>.txt`.
+//! - Parses each character in the file to create the level map and determines special positions, such as enemies and the player's start.
+//!
+//! Returns:
+//! - `Some(Level)`: If the file is successfully read and parsed.
+//! - `None`: If the file is not found or there is a read error.
+//!
+//! ## `set_tile`
+//! Sets a specified tile in the map to a new `TileType`.
+//!
+//! Arguments:
+//! - `pos` (`&Position`): The position in the map to be updated.
+//! - `tile_type` (`TileType`): The new tile type to set at the given position.
+//!
+//! Notes:
+//! - The method ensures the provided position is within the map boundaries.
+//!
+//! ## `get_tile`
+//! Retrieves the `TileType` at a specified position in the map.
+//!
+//! Arguments:
+//! - `pos` (`&Position`): The position to look up.
+//!
+//! Returns:
+//! - `Some(TileType)`: If the position is within the map boundaries.
+//! - `None`: If the position is out of bounds.
+//!
+//! # Example Tile Mapping Description
+//! The `load` method interprets characters in a `.txt` file to initialize the level,
+//! with each character corresponding to a `TileType`.
+//! For example:
+//! - `'t'`: Wall
+//! - `'p'`: Player starting position
+//! - `'e'`: Enemy
+//! - `'s'`: Empty space
+//!
+//! Additional characters map to their respective `TileType` as defined in the `match` block.
+//!
+
 use crate::classes::types::{Position, TileType};
 use std::fs;
 

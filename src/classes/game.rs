@@ -1,3 +1,36 @@
+//! The `Game` structure represents the main logic and state of the game.
+//!
+//! # Fields
+//!
+//! - `current_level` (`usize`): The current level the player is on.
+//! - `max_levels` (`usize`): The total number of levels in the game.
+//! - `level` (`Level`): The instance of the current level, managing the map and environmental data.
+//! - `ui` (`UI`): The User Interface handler for rendering the game state.
+//! - `boss_health` (`u8`): The current health points of the boss entity.
+//!
+//! # Methods
+//!
+//! - `default`: Provides a default implementation for the game.
+//! - `new`: Creates a new instance of the `Game` initialized with the first level, UI, and default settings.
+//! - `init_player`: Initializes the player for the current level, positioning them in the starting location.
+//! - `check_collision`: Checks if the given position collides with any object or boundary in the game and returns a `CollisionType`.
+//! - `handle_interaction`: Handles player interactions based on their pending movement and interactions with interactive objects like items, doors, or enemies.
+//! - `find_tile`: A helper method to find the position of a specific tile type in the map.
+//! - `has_any_tile`: Checks if any of the specified tile types exist on the current level map.
+//!
+//! # Usage
+//!
+//! ```rust,ignore
+//! // Create a new game instance
+//! let mut game = Game::new();
+//!
+//! // Initialize the player
+//! let mut player = game.init_player();
+//!
+//! // Check for interactions while navigating the game
+//! game.handle_interaction(&mut player);
+//! ```
+
 use crate::classes::level::Level;
 use crate::classes::player::Player;
 use crate::classes::types::{
@@ -9,9 +42,15 @@ use rand::Rng;
 pub struct Game {
     current_level: usize,
     max_levels: usize,
-    level: Level,
+    pub level: Level,
     ui: UI,
     boss_health: u8,
+}
+
+impl Default for Game {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Game {

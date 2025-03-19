@@ -39,6 +39,7 @@ impl Level {
                         'd' => map_row.push(TileType::Door),
                         'D' => map_row.push(TileType::DoorOpen),
                         'r' => map_row.push(TileType::Rock),
+                        '@' => map_row.push(TileType::Bomb),
                         'j' => map_row.push(TileType::Hook),
                         '1' => map_row.push(TileType::HookStart),
                         '2' => map_row.push(TileType::HookEnd),

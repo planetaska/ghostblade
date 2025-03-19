@@ -133,7 +133,9 @@ impl UI {
         let mut stdout = stdout();
 
         // Use the stored last_rendered_height to position the message
-        stdout.execute(MoveTo(0, self.last_rendered_height)).unwrap();
+        stdout
+            .execute(MoveTo(0, self.last_rendered_height))
+            .unwrap();
         stdout.execute(Clear(ClearType::CurrentLine)).unwrap();
 
         // Write the message
@@ -144,7 +146,9 @@ impl UI {
         std::thread::sleep(std::time::Duration::from_secs(1));
 
         // Clear the line again
-        stdout.execute(MoveTo(0, self.last_rendered_height)).unwrap();
+        stdout
+            .execute(MoveTo(0, self.last_rendered_height))
+            .unwrap();
         stdout.execute(Clear(ClearType::CurrentLine)).unwrap();
         stdout.flush().unwrap();
     }

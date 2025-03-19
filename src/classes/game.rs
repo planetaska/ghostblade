@@ -1,6 +1,8 @@
 use crate::classes::level::Level;
 use crate::classes::player::Player;
-use crate::classes::types::{CollisionType, InteractiveType, BlockingType, ItemType, Position, TileType};
+use crate::classes::types::{
+    BlockingType, CollisionType, InteractiveType, ItemType, Position, TileType,
+};
 use crate::classes::ui::UI;
 use rand::Rng;
 
@@ -56,14 +58,30 @@ impl Game {
             TileType::FlameA => return CollisionType::Blocking(BlockingType::FlameA),
             TileType::FlameB => return CollisionType::Blocking(BlockingType::FlameB),
             TileType::FlameC => return CollisionType::Blocking(BlockingType::FlameC),
+            TileType::Lantern => return CollisionType::Blocking(BlockingType::Lantern),
             TileType::Goal => return CollisionType::Goal,
             TileType::Princess => return CollisionType::Princess,
-            TileType::Axe => return CollisionType::Interactive(InteractiveType::Item(ItemType::Axe)),
-            TileType::Sword => return CollisionType::Interactive(InteractiveType::Item(ItemType::Sword)),
-            TileType::Key => return CollisionType::Interactive(InteractiveType::Item(ItemType::Key)),
-            TileType::Hook => return CollisionType::Interactive(InteractiveType::Item(ItemType::Hook)),
-            TileType::WindChime => return CollisionType::Interactive(InteractiveType::Item(ItemType::WindChime)),
-            TileType::DragonSword => return CollisionType::Interactive(InteractiveType::Item(ItemType::DragonSword)),
+            TileType::Axe => {
+                return CollisionType::Interactive(InteractiveType::Item(ItemType::Axe))
+            }
+            TileType::Sword => {
+                return CollisionType::Interactive(InteractiveType::Item(ItemType::Sword))
+            }
+            TileType::Key => {
+                return CollisionType::Interactive(InteractiveType::Item(ItemType::Key))
+            }
+            TileType::Bomb => {
+                return CollisionType::Interactive(InteractiveType::Item(ItemType::Bomb))
+            }
+            TileType::Hook => {
+                return CollisionType::Interactive(InteractiveType::Item(ItemType::Hook))
+            }
+            TileType::WindChime => {
+                return CollisionType::Interactive(InteractiveType::Item(ItemType::WindChime))
+            }
+            TileType::DragonSword => {
+                return CollisionType::Interactive(InteractiveType::Item(ItemType::DragonSword))
+            }
             TileType::WoodLog => return CollisionType::Interactive(InteractiveType::WoodLog),
             TileType::Door => return CollisionType::Interactive(InteractiveType::Door),
             TileType::Cottage => return CollisionType::Interactive(InteractiveType::Cottage),
@@ -88,48 +106,45 @@ impl Game {
     pub fn handle_interaction(&mut self, player: &mut Player) {
         // If there's a pending move, check for interactions
         if let Some(new_pos) = player.get_pending_move() {
-            match self.check_collision(&new_pos) {
-                CollisionType::Interactive(interactive_type) => {
-                    match interactive_type {
-                        InteractiveType::Item(item_type) => {
-                            self.handle_item_pickup(player, &new_pos, item_type);
-                        },
-                        InteractiveType::WoodLog => {
-                            self.handle_wood_log(player, &new_pos);
-                        },
-                        InteractiveType::Door => {
-                            self.handle_door(player, &new_pos);
-                        },
-                        InteractiveType::Cottage => {
-                            self.handle_cottage(player, &new_pos);
-                        },
-                        InteractiveType::Rock => {
-                            self.handle_rock(player, &new_pos);
-                        },
-                        InteractiveType::HookStart => {
-                            self.handle_hook_start(player, &new_pos);
-                        },
-                        InteractiveType::CrystalA => {
-                            self.handle_crystal(player, &new_pos);
-                        },
-                        InteractiveType::CrystalB => {
-                            self.handle_crystal(player, &new_pos);
-                        },
-                        InteractiveType::CrystalC => {
-                            self.handle_crystal(player, &new_pos);
-                        },
-                        InteractiveType::Enemy => {
-                            self.handle_enemy(player, &new_pos);
-                        },
-                        InteractiveType::Oni => {
-                            self.handle_oni(player, &new_pos);
-                        },
-                        InteractiveType::Boss => {
-                            self.handle_boss(player, &new_pos);
-                        },
+            if let CollisionType::Interactive(interactive_type) = self.check_collision(&new_pos) {
+                match interactive_type {
+                    InteractiveType::Item(item_type) => {
+                        self.handle_item_pickup(player, &new_pos, item_type);
                     }
-                },
-                _ => {}
+                    InteractiveType::WoodLog => {
+                        self.handle_wood_log(player, &new_pos);
+                    }
+                    InteractiveType::Door => {
+                        self.handle_door(player, &new_pos);
+                    }
+                    InteractiveType::Cottage => {
+                        self.handle_cottage(player, &new_pos);
+                    }
+                    InteractiveType::Rock => {
+                        self.handle_rock(player, &new_pos);
+                    }
+                    InteractiveType::HookStart => {
+                        self.handle_hook_start(player, &new_pos);
+                    }
+                    InteractiveType::CrystalA => {
+                        self.handle_crystal(player, &new_pos);
+                    }
+                    InteractiveType::CrystalB => {
+                        self.handle_crystal(player, &new_pos);
+                    }
+                    InteractiveType::CrystalC => {
+                        self.handle_crystal(player, &new_pos);
+                    }
+                    InteractiveType::Enemy => {
+                        self.handle_enemy(player, &new_pos);
+                    }
+                    InteractiveType::Oni => {
+                        self.handle_oni(player, &new_pos);
+                    }
+                    InteractiveType::Boss => {
+                        self.handle_boss(player, &new_pos);
+                    }
+                }
             }
         }
     }
@@ -141,7 +156,7 @@ impl Game {
                 if self.level.map[row][col] == tile_type {
                     return Some(Position {
                         row: row as i16,
-                        col: col as i16
+                        col: col as i16,
                     });
                 }
             }
@@ -325,8 +340,10 @@ impl Game {
 
                 // Show remaining health message
                 if self.boss_health > 0 {
-                    self.ui.show_message("   You are pushed away by the strong impact...");
-                    self.ui.show_message(&format!("   Boss health: {}/3", self.boss_health));
+                    self.ui
+                        .show_message("   You are pushed away by the strong impact...");
+                    self.ui
+                        .show_message(&format!("   Boss health: {}/3", self.boss_health));
                 }
 
                 // When boss health reaches 0, remove the boss
@@ -355,7 +372,8 @@ impl Game {
             // Consume the sword (one-time use)
             player.remove_item(ItemType::Sword);
             // Allow player to move to the enemy position
-            self.ui.show_message("   You slayed an enemy, a small victory ");
+            self.ui
+                .show_message("   You slayed an enemy, a small victory ");
             player.commit_move();
         } else {
             // Without sword, player dies on enemy collision

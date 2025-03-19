@@ -1,12 +1,10 @@
 # Ghostblade: Shinobi Gauntlet
-A command-line maze adventure game written in Rust
+Ghostblade is a command-line maze adventure game written in Rust
 
 ![Game UI](screenshots/game-ui.png)
 
-*(Temporary image)*
-
 ## About
-Ghostblade is a stealth-based maze crawler where you play as a ninja infiltrating a heavily guarded castle. Navigate through increasingly complex levels, avoid patrols, and use various tools and mechanics to reach the objective.
+Ghostblade is a stealth-based maze crawler where you play as a ninja (Ghostblade) infiltrating a heavily guarded castle. Navigate through increasingly complex levels, avoid patrols, and use various tools and mechanics to reach the objective.
 
 ## Features
 - 10 handcrafted levels with increasing difficulty
@@ -15,8 +13,7 @@ Ghostblade is a stealth-based maze crawler where you play as a ninja infiltratin
     - Patrol guards with different movement patterns
     - Locked doors and keys
     - Hidden paths
-    - Grappling hook movement
-    - Drawbridges and other environmental interactions
+    - Various environmental interactions
 
 ## Installation
 ```bash
@@ -38,13 +35,13 @@ In most cases, this should not cause issues.
 However, if the screen appears misaligned, try changing the terminal font for better compatibility.
 
 ## How to Play
-- Use `WASD` or arrow keys to move
-- `E` to interact with objects
-- `Space` to use special abilities
-- `Q` to quit current level
-- `Esc` to exit game
+- Use `WASD` keys to move
+- `Q` to quit the game
 
 ### Map Legend
+
+*showing only a few examples
+
 ```
 🥷 - Player
 🌲 - Wall
@@ -53,12 +50,16 @@ However, if the screen appears misaligned, try changing the terminal font for be
 🧌 - Patrol guard
 🗝️ - Key
 🚪 - Door
-🪝 - Hook point
-🪵 - Bridge
+🪝 - Hook
+⚓️ - Hook point
+🪓 - Axe
+🪵 - Woodlog for building Canoe 🛶
 ```
 
 ## Development
-The game is written in Rust and uses simple text files for map layouts. Each map is defined in a `.txt` file in the `maps/` directory.
+The game is written in Rust and uses simple text files for map layouts.
+
+Each map is defined in a `.txt` file in the `maps/` directory.
 
 ### Map Format
 ```
@@ -73,6 +74,11 @@ tspsbssbsst
 ttttttttttt
 ```
 
+### Map Customization
+
+You can modify existing maps or create new ones by editing or adding a map file.
+If you add a new map, be sure to update the `max_levels` value in `game.rb`.
+
 ## Contributing
 This is a personal study project. However, if you'd like to create your own version of the game, please feel free to fork this repository.
 
@@ -85,14 +91,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Special thanks to my professor Barton Massey
 
 ## Roadmap
-- [ ] Basic movement and collision
-- [ ] Level loading system
-- [ ] Patrol AI
-- [ ] Key/door mechanics
-- [ ] Grappling hook system
-- [ ] Bridge mechanics
-- [ ] 10 complete levels
-- [ ] Map editor (stretch goal)
+- [x] Basic movement and collision
+- [x] Level loading system
+- [x] Patrol AI
+- [x] Key/door mechanics
+- [x] Grappling hook system
+- [x] Bridge mechanics
+- [x] 10 complete levels
+- [ ] ~~Map editor~~ (stretch goal)
 
 ## Contact
 - GitHub: [@planetaska](https://github.com/planetaska)

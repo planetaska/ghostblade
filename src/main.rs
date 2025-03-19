@@ -57,6 +57,9 @@ fn main() -> io::Result<()> {
                 CollisionType::Goal => {
                     if game.advance_level() {
                         player.reset_position(game.get_player_start());
+                    } else {
+                        game.handle_game_clear();
+                        break 'game_loop;
                     }
                 }
                 CollisionType::Princess => {

@@ -44,6 +44,7 @@ impl UI {
                         TileType::Water => "🟦",
                         TileType::Volcano => "🌋",
                         TileType::Lava => "🟧",
+                        TileType::SnowMountain => "🗻",
                         TileType::Goal => "🏯",
                         TileType::Axe => "🪓",
                         TileType::WoodLog => "🪵",

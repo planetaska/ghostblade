@@ -13,8 +13,8 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 7;
-        let max_levels = 7;
+        let current_level = 8;
+        let max_levels = 8;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
 
@@ -50,6 +50,7 @@ impl Game {
             TileType::Water => return CollisionType::Blocking(BlockingType::Water),
             TileType::Volcano => return CollisionType::Blocking(BlockingType::Volcano),
             TileType::Lava => return CollisionType::Blocking(BlockingType::Lava),
+            TileType::SnowMountain => return CollisionType::Blocking(BlockingType::SnowMountain),
             TileType::Goal => return CollisionType::Goal,
             TileType::Axe => return CollisionType::Interactive(InteractiveType::Item(ItemType::Axe)),
             TileType::Sword => return CollisionType::Interactive(InteractiveType::Item(ItemType::Sword)),

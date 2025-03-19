@@ -32,6 +32,7 @@ pub enum BlockingType {
     Water,
     Volcano,
     Lava,
+    SnowMountain,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -52,6 +53,7 @@ pub enum TileType {
     Water,
     Volcano,
     Lava,
+    SnowMountain,
     Axe,
     WoodLog,
     Canoe,

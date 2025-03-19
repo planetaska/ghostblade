@@ -42,6 +42,8 @@ impl UI {
                         TileType::Bamboo => "🎋",
                         TileType::Mountain => "⛰️\u{200B}",
                         TileType::Water => "🟦",
+                        TileType::Volcano => "🌋",
+                        TileType::Lava => "🟧",
                         TileType::Goal => "🏯",
                         TileType::Axe => "🪓",
                         TileType::WoodLog => "🪵",
@@ -54,7 +56,10 @@ impl UI {
                         TileType::Tomb => "🪦",
                         TileType::Rock => "🪨",
                         TileType::Bomb => "💣",
-                        // TileType::Hook => "🪝",
+                        TileType::Hook => "🪝",
+                        TileType::HookStart => "⚓",
+                        TileType::HookEnd => "⚓",
+                        TileType::Link => "🔗",
                     }
                 };
                 line.push_str(char);
@@ -74,6 +79,7 @@ impl UI {
                     ItemType::Sword => "🗡\u{200B}",
                     ItemType::Key => "🗝️\u{200B}",
                     ItemType::Bomb => "💣",
+                    ItemType::Hook => "🪝",
                 };
                 frame.push_str(item_char);
                 frame.push(' ');

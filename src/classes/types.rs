@@ -8,7 +8,7 @@ pub struct Position {
 pub enum CollisionType {
     None,
     Interactive(InteractiveType),
-    Blocking,
+    Blocking(BlockingType),
     Goal,
 }
 
@@ -20,7 +20,18 @@ pub enum InteractiveType {
     Door,
     Cottage,
     Rock,
+    HookStart,
     Enemy,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum BlockingType {
+    Wall,
+    Bamboo,
+    Mountain,
+    Water,
+    Volcano,
+    Lava,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -28,7 +39,8 @@ pub enum ItemType {
     Axe,
     Sword,
     Key,
-    Bomb
+    Bomb,
+    Hook
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -38,6 +50,8 @@ pub enum TileType {
     Bamboo,
     Mountain,
     Water,
+    Volcano,
+    Lava,
     Axe,
     WoodLog,
     Canoe,
@@ -50,5 +64,8 @@ pub enum TileType {
     Bomb,
     Rock,
     Goal,
-    // Hook,
+    Hook,
+    HookStart,
+    HookEnd,
+    Link
 }

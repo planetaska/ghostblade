@@ -67,7 +67,7 @@ fn main() -> io::Result<()> {
                     // Handle all interactive elements with a single case
                     game.handle_interaction(&mut player);
                 }
-                CollisionType::Blocking => {
+                CollisionType::Blocking(_) => {
                     // All blocking elements (walls, mountains, water, etc.)
                     player.cancel_move();
                 }

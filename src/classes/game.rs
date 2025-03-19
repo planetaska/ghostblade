@@ -1,6 +1,6 @@
 use crate::classes::level::Level;
 use crate::classes::player::Player;
-use crate::classes::types::{CollisionType, InteractiveType, ItemType, Position, TileType};
+use crate::classes::types::{CollisionType, InteractiveType, BlockingType, ItemType, Position, TileType};
 use crate::classes::ui::UI;
 use rand::Rng;
 
@@ -13,8 +13,8 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 6;
-        let max_levels = 6;
+        let current_level = 7;
+        let max_levels = 7;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
 
@@ -39,22 +39,27 @@ impl Game {
             || pos.col < 0
             || pos.col >= self.level.map_size.1 as i16
         {
-            return CollisionType::Blocking;
+            return CollisionType::Blocking(BlockingType::Wall);
         }
 
         // Check static obstacles
         match self.level.map[pos.row as usize][pos.col as usize] {
-            TileType::Wall | TileType::Bamboo | TileType::Water | TileType::Mountain => {
-                return CollisionType::Blocking
-            }
+            TileType::Wall => return CollisionType::Blocking(BlockingType::Wall),
+            TileType::Bamboo => return CollisionType::Blocking(BlockingType::Bamboo),
+            TileType::Mountain => return CollisionType::Blocking(BlockingType::Mountain),
+            TileType::Water => return CollisionType::Blocking(BlockingType::Water),
+            TileType::Volcano => return CollisionType::Blocking(BlockingType::Volcano),
+            TileType::Lava => return CollisionType::Blocking(BlockingType::Lava),
             TileType::Goal => return CollisionType::Goal,
             TileType::Axe => return CollisionType::Interactive(InteractiveType::Item(ItemType::Axe)),
             TileType::Sword => return CollisionType::Interactive(InteractiveType::Item(ItemType::Sword)),
             TileType::Key => return CollisionType::Interactive(InteractiveType::Item(ItemType::Key)),
+            TileType::Hook => return CollisionType::Interactive(InteractiveType::Item(ItemType::Hook)),
             TileType::WoodLog => return CollisionType::Interactive(InteractiveType::WoodLog),
             TileType::Door => return CollisionType::Interactive(InteractiveType::Door),
             TileType::Cottage => return CollisionType::Interactive(InteractiveType::Cottage),
             TileType::Rock => return CollisionType::Interactive(InteractiveType::Rock),
+            TileType::HookStart => return CollisionType::Interactive(InteractiveType::HookStart),
             _ => {}
         }
 
@@ -86,6 +91,9 @@ impl Game {
                         },
                         InteractiveType::Rock => {
                             self.handle_rock(player, &new_pos);
+                        },
+                        InteractiveType::HookStart => {
+                            self.handle_hook_start(player, &new_pos);
                         },
                         InteractiveType::Enemy => {
                             self.handle_enemy(player, &new_pos);
@@ -161,6 +169,58 @@ impl Game {
         }
     }
 
+    fn handle_hook_start(&mut self, player: &mut Player, pos: &Position) {
+        if player.has_item(ItemType::Hook) {
+            // Find the HookEnd tile
+            let mut hook_end = None;
+            for row in 0..self.level.map_size.0 as i16 {
+                for col in 0..self.level.map_size.1 as i16 {
+                    let current_pos = Position { row, col };
+                    if let Some(tile) = self.level.get_tile(&current_pos) {
+                        if tile == TileType::HookEnd {
+                            hook_end = Some(current_pos);
+                            break;
+                        }
+                    }
+                }
+                if hook_end.is_some() {
+                    break;
+                }
+            }
+
+            if let Some(end_pos) = hook_end {
+                // Change the start position to Link
+                self.level.set_tile(pos, TileType::Link);
+
+                // Check if we can make a straight line path
+                if pos.row == end_pos.row {
+                    // Horizontal path
+                    let start_col = pos.col.min(end_pos.col);
+                    let end_col = pos.col.max(end_pos.col);
+
+                    for col in start_col..=end_col {
+                        let current = Position { row: pos.row, col };
+                        self.level.set_tile(&current, TileType::Link);
+                    }
+                } else if pos.col == end_pos.col {
+                    // Vertical path
+                    let start_row = pos.row.min(end_pos.row);
+                    let end_row = pos.row.max(end_pos.row);
+
+                    for row in start_row..=end_row {
+                        let current = Position { row, col: pos.col };
+                        self.level.set_tile(&current, TileType::Link);
+                    }
+                }
+            }
+
+            player.remove_item(ItemType::Hook);
+            player.cancel_move();
+        } else {
+            player.cancel_move();
+        }
+    }
+
     fn handle_enemy(&mut self, player: &mut Player, pos: &Position) {
         if player.has_item(ItemType::Sword) {
             // Remove enemy at this position
@@ -175,116 +235,6 @@ impl Game {
             player.reset_position(self.get_player_start());
         }
     }
-
-    // pub fn handle_interaction(&mut self, player: &mut Player) {
-    //     // If there's a pending move, check for interactions
-    //     if let Some(new_pos) = player.get_pending_move() {
-    //         match self.check_collision(&new_pos) {
-    //             CollisionType::Item => {
-    //                 // Get the tile at the new position
-    //                 let tile_type = self.level.map[new_pos.row as usize][new_pos.col as usize];
-    //
-    //                 // Handle item pickup based on tile type
-    //                 match tile_type {
-    //                     TileType::Axe => {
-    //                         player.add_item(ItemType::Axe);
-    //                         // Remove the axe from the map
-    //                         self.level.map[new_pos.row as usize][new_pos.col as usize] =
-    //                             TileType::Empty;
-    //                         // Allow movement to this tile
-    //                         player.commit_move();
-    //                     }
-    //                     TileType::Sword => {
-    //                         player.add_item(ItemType::Sword);
-    //                         // Remove the sword from the map
-    //                         self.level.map[new_pos.row as usize][new_pos.col as usize] =
-    //                             TileType::Empty;
-    //                         // Allow movement to this tile
-    //                         player.commit_move();
-    //                     }
-    //                     TileType::Key => {
-    //                         player.add_item(ItemType::Key);
-    //                         // Remove the key from the map
-    //                         self.level.map[new_pos.row as usize][new_pos.col as usize] =
-    //                             TileType::Empty;
-    //                         // Allow movement to this tile
-    //                         player.commit_move();
-    //                     }
-    //                     _ => {}
-    //                 }
-    //             }
-    //             CollisionType::WoodLog => {
-    //                 // Check if player has axe
-    //                 if player.has_item(ItemType::Axe) {
-    //                     // Find the water tile to the right of the log
-    //                     let water_pos = Position {
-    //                         row: new_pos.row,
-    //                         col: new_pos.col + 1,
-    //                     };
-    //
-    //                     // Check if the tile to the right is water
-    //                     let is_water_to_right = self.level.get_tile(&water_pos) == Some(TileType::Water);
-    //
-    //                     if is_water_to_right {
-    //                         // Case 1: Water to the right - create canoe
-    //                         self.level.set_tile(&water_pos, TileType::Canoe);
-    //                         self.level.set_tile(&new_pos, TileType::Empty);
-    //                         player.remove_item(ItemType::Axe);
-    //                         player.cancel_move(); // Player stays in place
-    //                     } else {
-    //                         // Case 2: No water to the right - just remove log
-    //                         self.level.set_tile(&new_pos, TileType::Empty);
-    //                         player.remove_item(ItemType::Axe);
-    //                         player.commit_move(); // Player moves to where log was
-    //                     }
-    //                 } else {
-    //                     // Can't interact with wood log without axe
-    //                     player.cancel_move();
-    //                 }
-    //             }
-    //             CollisionType::Door => {
-    //                 // Check if player has key
-    //                 if player.has_item(ItemType::Key) {
-    //                     self.level.set_tile(&new_pos, TileType::DoorOpen);
-    //                     player.remove_item(ItemType::Key);
-    //                     player.cancel_move();
-    //                 } else {
-    //                     // Can't interact with door without key
-    //                     player.cancel_move();
-    //                 }
-    //             }
-    //             CollisionType::Cottage => {
-    //                 // Player found a bomb
-    //                 player.add_item(ItemType::Bomb);
-    //                 // Remove the sword from the map
-    //                 self.level.set_tile(&new_pos, TileType::Tomb);
-    //                 // Allow movement to this tile
-    //                 player.commit_move();
-    //             }
-    //             CollisionType::Enemy => {
-    //                 // Check if player has sword
-    //                 if player.has_item(ItemType::Sword) {
-    //                     // Get enemy position
-    //                     let enemy_pos = new_pos;
-    //
-    //                     // Remove enemy at this position
-    //                     self.remove_enemy(&enemy_pos);
-    //
-    //                     // Consume the sword (one-time use)
-    //                     player.remove_item(ItemType::Sword);
-    //
-    //                     // Allow player to move to the enemy position
-    //                     player.commit_move();
-    //                 } else {
-    //                     // Without sword, player dies on enemy collision
-    //                     self.handle_player_death();
-    //                     player.reset_position(self.get_player_start());
-    //                 }
-    //             }
-    //             _ => {}
-    //         }
-    //     }
-    // }
 
     pub fn remove_enemy(&mut self, pos: &Position) {
         self.level.enemies.retain(|enemy| enemy != pos);

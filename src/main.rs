@@ -21,8 +21,8 @@ fn main() -> io::Result<()> {
     enable_raw_mode()?;
 
     // Game loop timing
-    // let frame_duration = Duration::from_millis(16); // ~60 FPS
-    let frame_duration = Duration::from_millis(160); // ~6 FPS
+    let fps = 10;
+    let frame_duration = Duration::from_secs_f32(1.0 / fps as f32);
     let enemy_move_interval = Duration::from_millis(500);
     let mut last_enemy_move = Instant::now();
 

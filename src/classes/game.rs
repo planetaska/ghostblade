@@ -16,7 +16,7 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 10;
+        let current_level = 1;
         let max_levels = 10;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
@@ -322,6 +322,8 @@ impl Game {
             self.level.set_tile(pos, TileType::Empty);
             player.remove_item(ItemType::WindChime);
             self.ui.show_message("   The wind chime cleanses the air ");
+            player.add_item(ItemType::DragonSword);
+            self.ui.show_message("   You found a Dragon Sword ");
             player.commit_move();
         } else {
             self.handle_player_death();

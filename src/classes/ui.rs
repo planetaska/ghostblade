@@ -143,7 +143,7 @@ impl UI {
         stdout.flush().unwrap();
 
         // Sleep to show message
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        std::thread::sleep(std::time::Duration::from_secs_f32(1.2));
 
         // Clear the line again
         stdout

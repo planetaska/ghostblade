@@ -9,12 +9,13 @@ pub struct Game {
     max_levels: usize,
     level: Level,
     ui: UI,
+    boss_health: u8,
 }
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 9;
-        let max_levels = 9;
+        let current_level = 10;
+        let max_levels = 10;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
 
@@ -23,6 +24,7 @@ impl Game {
             max_levels,
             level,
             ui,
+            boss_health: 3,
         }
     }
 
@@ -55,11 +57,13 @@ impl Game {
             TileType::FlameB => return CollisionType::Blocking(BlockingType::FlameB),
             TileType::FlameC => return CollisionType::Blocking(BlockingType::FlameC),
             TileType::Goal => return CollisionType::Goal,
+            TileType::Princess => return CollisionType::Princess,
             TileType::Axe => return CollisionType::Interactive(InteractiveType::Item(ItemType::Axe)),
             TileType::Sword => return CollisionType::Interactive(InteractiveType::Item(ItemType::Sword)),
             TileType::Key => return CollisionType::Interactive(InteractiveType::Item(ItemType::Key)),
             TileType::Hook => return CollisionType::Interactive(InteractiveType::Item(ItemType::Hook)),
             TileType::WindChime => return CollisionType::Interactive(InteractiveType::Item(ItemType::WindChime)),
+            TileType::DragonSword => return CollisionType::Interactive(InteractiveType::Item(ItemType::DragonSword)),
             TileType::WoodLog => return CollisionType::Interactive(InteractiveType::WoodLog),
             TileType::Door => return CollisionType::Interactive(InteractiveType::Door),
             TileType::Cottage => return CollisionType::Interactive(InteractiveType::Cottage),
@@ -69,6 +73,7 @@ impl Game {
             TileType::CrystalB => return CollisionType::Interactive(InteractiveType::CrystalB),
             TileType::CrystalC => return CollisionType::Interactive(InteractiveType::CrystalC),
             TileType::Oni => return CollisionType::Interactive(InteractiveType::Oni),
+            TileType::Boss => return CollisionType::Interactive(InteractiveType::Boss),
             _ => {}
         }
 
@@ -119,6 +124,9 @@ impl Game {
                         InteractiveType::Oni => {
                             self.handle_oni(player, &new_pos);
                         },
+                        InteractiveType::Boss => {
+                            self.handle_boss(player, &new_pos);
+                        },
                     }
                 },
                 _ => {}
@@ -140,22 +148,6 @@ impl Game {
         }
         None
     }
-
-    // Helper method to find all positions of a specific tile type
-    // fn find_all_tiles(&self, tile_type: TileType) -> Vec<Position> {
-    //     let mut positions = Vec::new();
-    //     for row in 0..self.level.map_size.0 as usize {
-    //         for col in 0..self.level.map_size.1 as usize {
-    //             if self.level.map[row][col] == tile_type {
-    //                 positions.push(Position {
-    //                     row: row as i16,
-    //                     col: col as i16
-    //                 });
-    //             }
-    //         }
-    //     }
-    //     positions
-    // }
 
     // Helper method to check if any tile of the specified types exists
     fn has_any_tile(&self, tile_types: &[TileType]) -> bool {
@@ -193,11 +185,13 @@ impl Game {
                 self.level.set_tile(&water_pos, TileType::Canoe);
                 self.level.set_tile(pos, TileType::Empty);
                 player.remove_item(ItemType::Axe);
+                self.ui.show_message("   You crafted a canoe ");
                 player.cancel_move();
             } else {
                 // No water - just remove log
                 self.level.set_tile(pos, TileType::Empty);
                 player.remove_item(ItemType::Axe);
+                self.ui.show_message("   You chopped the log ");
                 player.commit_move();
             }
         } else {
@@ -209,6 +203,7 @@ impl Game {
         if player.has_item(ItemType::Key) {
             self.level.set_tile(pos, TileType::DoorOpen);
             player.remove_item(ItemType::Key);
+            self.ui.show_message("   You opened the door ");
             player.cancel_move();
         } else {
             player.cancel_move();
@@ -218,6 +213,7 @@ impl Game {
     fn handle_cottage(&mut self, player: &mut Player, pos: &Position) {
         self.level.set_tile(pos, TileType::Tomb);
         player.add_item(ItemType::Bomb);
+        self.ui.show_message("   You found a bomb ");
         player.cancel_move();
     }
 
@@ -225,6 +221,7 @@ impl Game {
         if player.has_item(ItemType::Bomb) {
             self.level.set_tile(pos, TileType::Empty);
             player.remove_item(ItemType::Bomb);
+            self.ui.show_message("  💥 The rock crumbles to dust 💥");
             player.cancel_move();
         } else {
             player.cancel_move();
@@ -263,6 +260,7 @@ impl Game {
             }
 
             player.remove_item(ItemType::Hook);
+            self.ui.show_message("   You hooked the link ");
             player.cancel_move();
         } else {
             player.cancel_move();
@@ -284,6 +282,7 @@ impl Game {
         // Look for the corresponding flame in the map and remove it
         if let Some(flame_pos) = self.find_tile(flame_type) {
             self.level.set_tile(&flame_pos, TileType::Empty);
+            self.ui.show_message("   The flame vanishes ");
         }
 
         // Change the crystal to an alembic
@@ -307,8 +306,43 @@ impl Game {
         if player.has_item(ItemType::WindChime) {
             self.level.set_tile(pos, TileType::Empty);
             player.remove_item(ItemType::WindChime);
+            self.ui.show_message("   The wind chime cleanses the air ");
             player.commit_move();
         } else {
+            self.handle_player_death();
+            player.reset_position(self.get_player_start());
+        }
+    }
+
+    fn handle_boss(&mut self, player: &mut Player, pos: &Position) {
+        if player.has_item(ItemType::DragonSword) {
+            // Show clash message
+            self.ui.show_message("   ⚔️\u{200B} Clash! ⚔️\u{200B}");
+
+            // Decrease boss health
+            if self.boss_health > 0 {
+                self.boss_health -= 1;
+
+                // Show remaining health message
+                if self.boss_health > 0 {
+                    self.ui.show_message("   You are pushed away by the strong impact...");
+                    self.ui.show_message(&format!("   Boss health: {}/3", self.boss_health));
+                }
+
+                // When boss health reaches 0, remove the boss
+                if self.boss_health == 0 {
+                    self.level.set_tile(pos, TileType::Empty);
+                    self.ui.show_message("  💥 Boss defeated! 💥");
+                    // Don't reset player position on final hit to allow movement to empty tile
+                    player.commit_move();
+                    return;
+                }
+            }
+
+            // Reset player position after each non-final hit
+            player.reset_position(self.get_player_start());
+        } else {
+            // Without DragonSword, player dies
             self.handle_player_death();
             player.reset_position(self.get_player_start());
         }
@@ -321,6 +355,7 @@ impl Game {
             // Consume the sword (one-time use)
             player.remove_item(ItemType::Sword);
             // Allow player to move to the enemy position
+            self.ui.show_message("   You slayed an enemy, a small victory ");
             player.commit_move();
         } else {
             // Without sword, player dies on enemy collision
@@ -383,7 +418,7 @@ impl Game {
         self.ui.show_game_clear_message();
     }
 
-    pub fn render(&self, player: &Player) {
+    pub fn render(&mut self, player: &Player) {
         self.ui.render(&self.level, player);
     }
 }

@@ -8,14 +8,18 @@ use crossterm::{
 };
 use std::io::{stdout, Write};
 
-pub struct UI {}
+pub struct UI {
+    last_rendered_height: u16, // Track the last rendered height to know where to put messages
+}
 
 impl UI {
     pub fn new() -> Self {
-        Self {}
+        Self {
+            last_rendered_height: 0,
+        }
     }
 
-    pub fn render(&self, level: &Level, player: &Player) {
+    pub fn render(&mut self, level: &Level, player: &Player) {
         let mut stdout = stdout();
         stdout.execute(Clear(ClearType::All)).unwrap();
         stdout.execute(MoveTo(0, 0)).unwrap();
@@ -69,7 +73,11 @@ impl UI {
                         TileType::FlameC => "🔥",
                         TileType::Alembic => "⚗️\u{200B}",
                         TileType::WindChime => "🎐",
+                        TileType::DragonSword => "⚔️\u{200B}",
+                        TileType::Lantern => "🏮",
                         TileType::Oni => "👹",
+                        TileType::Boss => "🎎",
+                        TileType::Princess => "🧝‍♀️",
                     }
                 };
                 line.push_str(char);
@@ -91,6 +99,7 @@ impl UI {
                     ItemType::Bomb => "💣",
                     ItemType::Hook => "🪝",
                     ItemType::WindChime => "🎐",
+                    ItemType::DragonSword => "⚔️",
                 };
                 frame.push_str(item_char);
                 frame.push(' ');
@@ -99,6 +108,12 @@ impl UI {
 
         frame.push_str("\r\n");
         frame.push_str(" wasd: Move | q: Quit");
+
+        // Reserve a line for messages
+        frame.push_str("\r\n");
+
+        // Calculate total lines
+        self.last_rendered_height = level.map.len() as u16 + 3; // map + inventory + controls + empty
 
         // Write the complete frame at once
         // print!("{}", frame);
@@ -115,7 +130,22 @@ impl UI {
     }
 
     pub fn show_message(&self, message: &str) {
-        println!("{}", message);
+        let mut stdout = stdout();
+
+        // Use the stored last_rendered_height to position the message
+        stdout.execute(MoveTo(0, self.last_rendered_height)).unwrap();
+        stdout.execute(Clear(ClearType::CurrentLine)).unwrap();
+
+        // Write the message
+        writeln!(stdout, "{}", message).unwrap();
+        stdout.flush().unwrap();
+
+        // Sleep to show message
         std::thread::sleep(std::time::Duration::from_secs(1));
+
+        // Clear the line again
+        stdout.execute(MoveTo(0, self.last_rendered_height)).unwrap();
+        stdout.execute(Clear(ClearType::CurrentLine)).unwrap();
+        stdout.flush().unwrap();
     }
 }

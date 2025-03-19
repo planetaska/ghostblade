@@ -57,11 +57,11 @@ fn main() -> io::Result<()> {
                 CollisionType::Goal => {
                     if game.advance_level() {
                         player.reset_position(game.get_player_start());
-                    } else {
-                        // Game completed
-                        game.handle_game_clear();
-                        break 'game_loop;
                     }
+                }
+                CollisionType::Princess => {
+                    game.handle_game_clear();
+                    break 'game_loop;
                 }
                 CollisionType::Interactive(_) => {
                     // Handle all interactive elements with a single case

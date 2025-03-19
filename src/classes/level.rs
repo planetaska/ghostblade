@@ -37,6 +37,7 @@ impl Level {
                         '+' => map_row.push(TileType::Sword),
                         'k' => map_row.push(TileType::Key),
                         'd' => map_row.push(TileType::Door),
+                        'D' => map_row.push(TileType::DoorOpen),
                         'r' => map_row.push(TileType::Rock),
                         'j' => map_row.push(TileType::Hook),
                         '1' => map_row.push(TileType::HookStart),
@@ -49,7 +50,11 @@ impl Level {
                         '4' => map_row.push(TileType::FlameB),
                         '5' => map_row.push(TileType::FlameC),
                         'i' => map_row.push(TileType::WindChime),
+                        'x' => map_row.push(TileType::DragonSword),
+                        'O' => map_row.push(TileType::Lantern),
                         'o' => map_row.push(TileType::Oni),
+                        '0' => map_row.push(TileType::Boss),
+                        '$' => map_row.push(TileType::Princess),
                         'p' => {
                             map_row.push(TileType::Empty);
                             player_start = Position {

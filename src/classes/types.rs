@@ -10,6 +10,7 @@ pub enum CollisionType {
     Interactive(InteractiveType),
     Blocking(BlockingType),
     Goal,
+    Princess,
 }
 
 // Specific types of interactive elements
@@ -26,6 +27,7 @@ pub enum InteractiveType {
     CrystalC,
     Enemy,
     Oni,
+    Boss,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -40,6 +42,7 @@ pub enum BlockingType {
     FlameA,
     FlameB,
     FlameC,
+    Lantern,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -50,6 +53,7 @@ pub enum ItemType {
     Bomb,
     Hook,
     WindChime,
+    DragonSword,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -86,5 +90,9 @@ pub enum TileType {
     FlameC,
     Alembic,
     WindChime,
+    Lantern,
+    DragonSword,
     Oni,
+    Boss,
+    Princess,
 }

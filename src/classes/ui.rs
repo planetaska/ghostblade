@@ -61,6 +61,15 @@ impl UI {
                         TileType::HookStart => "⚓",
                         TileType::HookEnd => "⚓",
                         TileType::Link => "🔗",
+                        TileType::CrystalA => "🔮",
+                        TileType::CrystalB => "🔮",
+                        TileType::CrystalC => "🔮",
+                        TileType::FlameA => "🔥",
+                        TileType::FlameB => "🔥",
+                        TileType::FlameC => "🔥",
+                        TileType::Alembic => "⚗️\u{200B}",
+                        TileType::WindChime => "🎐",
+                        TileType::Oni => "👹",
                     }
                 };
                 line.push_str(char);
@@ -81,6 +90,7 @@ impl UI {
                     ItemType::Key => "🗝️\u{200B}",
                     ItemType::Bomb => "💣",
                     ItemType::Hook => "🪝",
+                    ItemType::WindChime => "🎐",
                 };
                 frame.push_str(item_char);
                 frame.push(' ');
@@ -88,7 +98,7 @@ impl UI {
         }
 
         frame.push_str("\r\n");
-        frame.push_str(" wsad: Move | q: Quit");
+        frame.push_str(" wasd: Move | q: Quit");
 
         // Write the complete frame at once
         // print!("{}", frame);
@@ -104,7 +114,7 @@ impl UI {
         self.show_message("   🎊 Game clear 🎊");
     }
 
-    fn show_message(&self, message: &str) {
+    pub fn show_message(&self, message: &str) {
         println!("{}", message);
         std::thread::sleep(std::time::Duration::from_secs(1));
     }

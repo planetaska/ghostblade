@@ -21,7 +21,11 @@ pub enum InteractiveType {
     Cottage,
     Rock,
     HookStart,
+    CrystalA,
+    CrystalB,
+    CrystalC,
     Enemy,
+    Oni,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -33,6 +37,9 @@ pub enum BlockingType {
     Volcano,
     Lava,
     SnowMountain,
+    FlameA,
+    FlameB,
+    FlameC,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -41,7 +48,8 @@ pub enum ItemType {
     Sword,
     Key,
     Bomb,
-    Hook
+    Hook,
+    WindChime,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -69,5 +77,14 @@ pub enum TileType {
     Hook,
     HookStart,
     HookEnd,
-    Link
+    Link,
+    CrystalA,
+    CrystalB,
+    CrystalC,
+    FlameA,
+    FlameB,
+    FlameC,
+    Alembic,
+    WindChime,
+    Oni,
 }

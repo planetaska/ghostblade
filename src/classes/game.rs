@@ -13,8 +13,8 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let current_level = 8;
-        let max_levels = 8;
+        let current_level = 9;
+        let max_levels = 9;
         let level = Level::load(current_level).expect("Failed to load first level");
         let ui = UI::new();
 
@@ -51,16 +51,24 @@ impl Game {
             TileType::Volcano => return CollisionType::Blocking(BlockingType::Volcano),
             TileType::Lava => return CollisionType::Blocking(BlockingType::Lava),
             TileType::SnowMountain => return CollisionType::Blocking(BlockingType::SnowMountain),
+            TileType::FlameA => return CollisionType::Blocking(BlockingType::FlameA),
+            TileType::FlameB => return CollisionType::Blocking(BlockingType::FlameB),
+            TileType::FlameC => return CollisionType::Blocking(BlockingType::FlameC),
             TileType::Goal => return CollisionType::Goal,
             TileType::Axe => return CollisionType::Interactive(InteractiveType::Item(ItemType::Axe)),
             TileType::Sword => return CollisionType::Interactive(InteractiveType::Item(ItemType::Sword)),
             TileType::Key => return CollisionType::Interactive(InteractiveType::Item(ItemType::Key)),
             TileType::Hook => return CollisionType::Interactive(InteractiveType::Item(ItemType::Hook)),
+            TileType::WindChime => return CollisionType::Interactive(InteractiveType::Item(ItemType::WindChime)),
             TileType::WoodLog => return CollisionType::Interactive(InteractiveType::WoodLog),
             TileType::Door => return CollisionType::Interactive(InteractiveType::Door),
             TileType::Cottage => return CollisionType::Interactive(InteractiveType::Cottage),
             TileType::Rock => return CollisionType::Interactive(InteractiveType::Rock),
             TileType::HookStart => return CollisionType::Interactive(InteractiveType::HookStart),
+            TileType::CrystalA => return CollisionType::Interactive(InteractiveType::CrystalA),
+            TileType::CrystalB => return CollisionType::Interactive(InteractiveType::CrystalB),
+            TileType::CrystalC => return CollisionType::Interactive(InteractiveType::CrystalC),
+            TileType::Oni => return CollisionType::Interactive(InteractiveType::Oni),
             _ => {}
         }
 
@@ -96,14 +104,67 @@ impl Game {
                         InteractiveType::HookStart => {
                             self.handle_hook_start(player, &new_pos);
                         },
+                        InteractiveType::CrystalA => {
+                            self.handle_crystal(player, &new_pos);
+                        },
+                        InteractiveType::CrystalB => {
+                            self.handle_crystal(player, &new_pos);
+                        },
+                        InteractiveType::CrystalC => {
+                            self.handle_crystal(player, &new_pos);
+                        },
                         InteractiveType::Enemy => {
                             self.handle_enemy(player, &new_pos);
+                        },
+                        InteractiveType::Oni => {
+                            self.handle_oni(player, &new_pos);
                         },
                     }
                 },
                 _ => {}
             }
         }
+    }
+
+    // Helper method to find a specific tile type in the map
+    fn find_tile(&self, tile_type: TileType) -> Option<Position> {
+        for row in 0..self.level.map_size.0 as usize {
+            for col in 0..self.level.map_size.1 as usize {
+                if self.level.map[row][col] == tile_type {
+                    return Some(Position {
+                        row: row as i16,
+                        col: col as i16
+                    });
+                }
+            }
+        }
+        None
+    }
+
+    // Helper method to find all positions of a specific tile type
+    // fn find_all_tiles(&self, tile_type: TileType) -> Vec<Position> {
+    //     let mut positions = Vec::new();
+    //     for row in 0..self.level.map_size.0 as usize {
+    //         for col in 0..self.level.map_size.1 as usize {
+    //             if self.level.map[row][col] == tile_type {
+    //                 positions.push(Position {
+    //                     row: row as i16,
+    //                     col: col as i16
+    //                 });
+    //             }
+    //         }
+    //     }
+    //     positions
+    // }
+
+    // Helper method to check if any tile of the specified types exists
+    fn has_any_tile(&self, tile_types: &[TileType]) -> bool {
+        for tile_type in tile_types {
+            if self.find_tile(*tile_type).is_some() {
+                return true;
+            }
+        }
+        false
     }
 
     fn handle_item_pickup(&mut self, player: &mut Player, pos: &Position, item_type: ItemType) {
@@ -173,21 +234,7 @@ impl Game {
     fn handle_hook_start(&mut self, player: &mut Player, pos: &Position) {
         if player.has_item(ItemType::Hook) {
             // Find the HookEnd tile
-            let mut hook_end = None;
-            for row in 0..self.level.map_size.0 as i16 {
-                for col in 0..self.level.map_size.1 as i16 {
-                    let current_pos = Position { row, col };
-                    if let Some(tile) = self.level.get_tile(&current_pos) {
-                        if tile == TileType::HookEnd {
-                            hook_end = Some(current_pos);
-                            break;
-                        }
-                    }
-                }
-                if hook_end.is_some() {
-                    break;
-                }
-            }
+            let hook_end = self.find_tile(TileType::HookEnd);
 
             if let Some(end_pos) = hook_end {
                 // Change the start position to Link
@@ -219,6 +266,51 @@ impl Game {
             player.cancel_move();
         } else {
             player.cancel_move();
+        }
+    }
+
+    fn handle_crystal(&mut self, player: &mut Player, pos: &Position) {
+        // Determine which crystal type was interacted with
+        let crystal_type = self.level.map[pos.row as usize][pos.col as usize];
+
+        // Find and remove the corresponding flame
+        let flame_type = match crystal_type {
+            TileType::CrystalA => TileType::FlameA,
+            TileType::CrystalB => TileType::FlameB,
+            TileType::CrystalC => TileType::FlameC,
+            _ => return, // Not a crystal, shouldn't happen but just in case
+        };
+
+        // Look for the corresponding flame in the map and remove it
+        if let Some(flame_pos) = self.find_tile(flame_type) {
+            self.level.set_tile(&flame_pos, TileType::Empty);
+        }
+
+        // Change the crystal to an alembic
+        self.level.set_tile(pos, TileType::Alembic);
+
+        // Check if all flames are removed
+        let flame_types = [TileType::FlameA, TileType::FlameB, TileType::FlameC];
+        let all_flames_removed = !self.has_any_tile(&flame_types);
+
+        // If all flames are gone, give player the WindChime
+        if all_flames_removed {
+            player.add_item(ItemType::WindChime);
+            // Show notification using the UI
+            self.ui.show_message("   🎐 You received a Wind Chime! 🎐");
+        }
+
+        player.cancel_move();
+    }
+
+    fn handle_oni(&mut self, player: &mut Player, pos: &Position) {
+        if player.has_item(ItemType::WindChime) {
+            self.level.set_tile(pos, TileType::Empty);
+            player.remove_item(ItemType::WindChime);
+            player.commit_move();
+        } else {
+            self.handle_player_death();
+            player.reset_position(self.get_player_start());
         }
     }
 

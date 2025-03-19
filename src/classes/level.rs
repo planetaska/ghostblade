@@ -42,6 +42,14 @@ impl Level {
                         '1' => map_row.push(TileType::HookStart),
                         '2' => map_row.push(TileType::HookEnd),
                         '-' => map_row.push(TileType::Link),
+                        'A' => map_row.push(TileType::CrystalA),
+                        'B' => map_row.push(TileType::CrystalB),
+                        'C' => map_row.push(TileType::CrystalC),
+                        '3' => map_row.push(TileType::FlameA),
+                        '4' => map_row.push(TileType::FlameB),
+                        '5' => map_row.push(TileType::FlameC),
+                        'i' => map_row.push(TileType::WindChime),
+                        'o' => map_row.push(TileType::Oni),
                         'p' => {
                             map_row.push(TileType::Empty);
                             player_start = Position {

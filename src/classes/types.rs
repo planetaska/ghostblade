@@ -115,7 +115,6 @@ pub enum CollisionType {
     Princess,
 }
 
-// Specific types of interactive elements
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum InteractiveType {
     Item(ItemType),

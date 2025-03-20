@@ -38,24 +38,19 @@ use classes::game::Game;
 use classes::types::CollisionType;
 
 fn main() -> io::Result<()> {
-    // Initialize game state
     let mut game = Game::new();
     let mut player = game.init_player();
 
-    // Setup terminal
     enable_raw_mode()?;
 
-    // Game loop timing
     let fps = 10;
     let frame_duration = Duration::from_secs_f32(1.0 / fps as f32);
     let enemy_move_interval = Duration::from_millis(500);
     let mut last_enemy_move = Instant::now();
 
-    // Main game loop
     'game_loop: loop {
         let frame_start = Instant::now();
 
-        // Handle input
         if event::poll(Duration::from_millis(0))? {
             if let Event::Key(key_event) = event::read()? {
                 match key_event.code {
@@ -69,13 +64,11 @@ fn main() -> io::Result<()> {
             }
         }
 
-        // Update game state
         if last_enemy_move.elapsed() >= enemy_move_interval {
             game.update_enemies();
             last_enemy_move = Instant::now();
         }
 
-        // Process player movement and collisions
         if let Some(new_pos) = player.get_pending_move() {
             match game.check_collision(&new_pos) {
                 CollisionType::None => player.commit_move(),
@@ -92,27 +85,22 @@ fn main() -> io::Result<()> {
                     break 'game_loop;
                 }
                 CollisionType::Interactive(_) => {
-                    // Handle all interactive elements with a single case
                     game.handle_interaction(&mut player);
                 }
                 CollisionType::Blocking(_) => {
-                    // All blocking elements (walls, mountains, water, etc.)
                     player.cancel_move();
                 }
             }
         }
 
-        // Render
         game.render(&player);
 
-        // Frame timing
         let elapsed = frame_start.elapsed();
         if elapsed < frame_duration {
             std::thread::sleep(frame_duration - elapsed);
         }
     }
 
-    // Cleanup
     disable_raw_mode()?;
     Ok(())
 }

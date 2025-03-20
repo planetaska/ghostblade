@@ -62,7 +62,6 @@ pub struct Level {
     pub enemies: Vec<Position>,
     pub player_start: Position,
     pub map_size: (u8, u8),
-    // pub goal: Position, // Did not need goal pos returned, as we have tile map
 }
 
 impl Level {
@@ -72,7 +71,6 @@ impl Level {
             let mut map = Vec::new();
             let mut enemies = Vec::new();
             let mut player_start = Position { row: 0, col: 0 };
-            // let mut goal = Position { row: 0, col: 0 };
 
             for (row, line) in contents.lines().enumerate() {
                 let mut map_row = Vec::new();

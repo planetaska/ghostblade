@@ -107,6 +107,8 @@ One particularly interesting (or frustrating) issue I encountered was Unicode wi
 
 I initially considered using the `unicode_width` crate to handle this, but it determines character width based on Unicode classification rather than the actual behavior of the terminal. After extensive trial and error, I settled on using a Zero Width Space (`U+200B`) as a workaround. However, this solution isn’t bulletproof, as some terminals may still render characters inconsistently. Due to time constraints, I had to leave it as-is and hope that most major terminals handle it correctly.
 
+## Reflections and Future Plans
+
 Overall, I am very satisfied with the result and impressed by Rust as a language. It strikes a great balance between performance, safety, and development experience. Rust has become one of my favorite languages to work with - second only to Ruby, which remains unbeatable in terms of ease of use. For projects that demand strict type safety though, I would choose Rust without hesitation.
 
 For future improvements, I plan to develop a map editor for the game. I already have a vision for it, and with more time, I am confident I can complete it. I have designed the program to be modular and extendable, making it easier to add new features down the line. If time permits, I would also love to port the game to a real game engine and take it even further.

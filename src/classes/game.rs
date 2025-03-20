@@ -134,7 +134,6 @@ impl Game {
             _ => {}
         }
 
-        // Check enemies
         if self.level.enemies.contains(pos) {
             return CollisionType::Interactive(InteractiveType::Enemy);
         }
@@ -143,7 +142,6 @@ impl Game {
     }
 
     pub fn handle_interaction(&mut self, player: &mut Player) {
-        // If there's a pending move, check for interactions
         if let Some(new_pos) = player.get_pending_move() {
             if let CollisionType::Interactive(interactive_type) = self.check_collision(&new_pos) {
                 match interactive_type {
@@ -188,7 +186,6 @@ impl Game {
         }
     }
 
-    // Helper method to find a specific tile type in the map
     fn find_tile(&self, tile_type: TileType) -> Option<Position> {
         for row in 0..self.level.map_size.0 as usize {
             for col in 0..self.level.map_size.1 as usize {
@@ -203,7 +200,6 @@ impl Game {
         None
     }
 
-    // Helper method to check if any tile of the specified types exists
     fn has_any_tile(&self, tile_types: &[TileType]) -> bool {
         for tile_type in tile_types {
             if self.find_tile(*tile_type).is_some() {
@@ -284,16 +280,12 @@ impl Game {
 
     fn handle_hook_start(&mut self, player: &mut Player, pos: &Position) {
         if player.has_item(ItemType::Hook) {
-            // Find the HookEnd tile
             let hook_end = self.find_tile(TileType::HookEnd);
 
             if let Some(end_pos) = hook_end {
-                // Change the start position to Link
                 self.level.set_tile(pos, TileType::Link);
 
-                // Check if we can make a straight line path
                 if pos.row == end_pos.row {
-                    // Horizontal path
                     let start_col = pos.col.min(end_pos.col);
                     let end_col = pos.col.max(end_pos.col);
 
@@ -302,7 +294,6 @@ impl Game {
                         self.level.set_tile(&current, TileType::Link);
                     }
                 } else if pos.col == end_pos.col {
-                    // Vertical path
                     let start_row = pos.row.min(end_pos.row);
                     let end_row = pos.row.max(end_pos.row);
 
@@ -322,34 +313,27 @@ impl Game {
     }
 
     fn handle_crystal(&mut self, player: &mut Player, pos: &Position) {
-        // Determine which crystal type was interacted with
         let crystal_type = self.level.map[pos.row as usize][pos.col as usize];
 
-        // Find and remove the corresponding flame
         let flame_type = match crystal_type {
             TileType::CrystalA => TileType::FlameA,
             TileType::CrystalB => TileType::FlameB,
             TileType::CrystalC => TileType::FlameC,
-            _ => return, // Not a crystal, shouldn't happen but just in case
+            _ => return,
         };
 
-        // Look for the corresponding flame in the map and remove it
         if let Some(flame_pos) = self.find_tile(flame_type) {
             self.level.set_tile(&flame_pos, TileType::Empty);
             self.ui.show_message("   The flame vanishes ");
         }
 
-        // Change the crystal to an alembic
         self.level.set_tile(pos, TileType::Alembic);
 
-        // Check if all flames are removed
         let flame_types = [TileType::FlameA, TileType::FlameB, TileType::FlameC];
         let all_flames_removed = !self.has_any_tile(&flame_types);
 
-        // If all flames are gone, give player the WindChime
         if all_flames_removed {
             player.add_item(ItemType::WindChime);
-            // Show notification using the UI
             self.ui.show_message("   🎐 You received a Wind Chime! 🎐");
         }
 
@@ -372,14 +356,11 @@ impl Game {
 
     fn handle_boss(&mut self, player: &mut Player, pos: &Position) {
         if player.has_item(ItemType::DragonSword) {
-            // Show clash message
             self.ui.show_message("   ⚔️\u{200B} Clash! ⚔️\u{200B}");
 
-            // Decrease boss health
             if self.boss_health > 0 {
                 self.boss_health -= 1;
 
-                // Show remaining health message
                 if self.boss_health > 0 {
                     self.ui
                         .show_message("   You are pushed away by the strong impact...");
@@ -387,20 +368,16 @@ impl Game {
                         .show_message(&format!("   Boss health: {}/3", self.boss_health));
                 }
 
-                // When boss health reaches 0, remove the boss
                 if self.boss_health == 0 {
                     self.level.set_tile(pos, TileType::Empty);
                     self.ui.show_message("  💥 Boss defeated! 💥");
-                    // Don't reset player position on final hit to allow movement to empty tile
                     player.commit_move();
                     return;
                 }
             }
 
-            // Reset player position after each non-final hit
             player.reset_position(self.get_player_start());
         } else {
-            // Without DragonSword, player dies
             self.handle_player_death();
             player.reset_position(self.get_player_start());
         }
@@ -408,16 +385,12 @@ impl Game {
 
     fn handle_enemy(&mut self, player: &mut Player, pos: &Position) {
         if player.has_item(ItemType::Sword) {
-            // Remove enemy at this position
             self.remove_enemy(pos);
-            // Consume the sword (one-time use)
             player.remove_item(ItemType::Sword);
-            // Allow player to move to the enemy position
             self.ui
                 .show_message("   You slayed an enemy, a small victory ");
             player.commit_move();
         } else {
-            // Without sword, player dies on enemy collision
             self.handle_player_death();
             player.reset_position(self.get_player_start());
         }
@@ -431,7 +404,6 @@ impl Game {
         let mut rng = rand::rng();
         let directions = [(0, 1), (0, -1), (1, 0), (-1, 0)];
 
-        // Extract enemies into a temporary variable to avoid borrowing issues
         let mut enemies = std::mem::take(&mut self.level.enemies);
 
         for enemy in &mut enemies {

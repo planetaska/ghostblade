@@ -46,7 +46,7 @@ use crossterm::{
 use std::io::{stdout, Write};
 
 pub struct UI {
-    last_rendered_height: u16, // Track the last rendered height to know where to put messages
+    last_rendered_height: u16,
 }
 
 impl Default for UI {
@@ -68,7 +68,6 @@ impl UI {
         stdout.execute(MoveTo(0, 0)).unwrap();
         stdout.execute(Hide).unwrap();
 
-        // Build the complete frame in a string first
         let mut frame = String::new();
         for (row, row_tiles) in level.map.iter().enumerate() {
             let mut line = String::new();
@@ -129,7 +128,6 @@ impl UI {
             frame.push_str(&line);
         }
 
-        // Add inventory display below the map
         frame.push_str(" 🎒 Inventory: ");
         if player.inventory.is_empty() {
             frame.push_str("Empty");
@@ -152,14 +150,10 @@ impl UI {
         frame.push_str("\r\n");
         frame.push_str(" wasd: Move | q: Quit");
 
-        // Reserve a line for messages
         frame.push_str("\r\n");
 
-        // Calculate total lines
         self.last_rendered_height = level.map.len() as u16 + 3; // map + inventory + controls + empty
 
-        // Write the complete frame at once
-        // print!("{}", frame);
         write!(stdout, "{}", frame).unwrap();
         stdout.flush().unwrap();
     }
@@ -175,20 +169,16 @@ impl UI {
     pub fn show_message(&self, message: &str) {
         let mut stdout = stdout();
 
-        // Use the stored last_rendered_height to position the message
         stdout
             .execute(MoveTo(0, self.last_rendered_height))
             .unwrap();
         stdout.execute(Clear(ClearType::CurrentLine)).unwrap();
 
-        // Write the message
         writeln!(stdout, "{}", message).unwrap();
         stdout.flush().unwrap();
 
-        // Sleep to show message
         std::thread::sleep(std::time::Duration::from_secs_f32(1.2));
 
-        // Clear the line again
         stdout
             .execute(MoveTo(0, self.last_rendered_height))
             .unwrap();

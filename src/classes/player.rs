@@ -139,3 +139,103 @@ impl Player {
         }
     }
 }
+
+#[test]
+fn test_player_reset_position() {
+    let mut player = Player::new();
+    let start_pos = Position { row: 3, col: 4 };
+
+    player.reset_position(start_pos);
+    assert_eq!(player.pos, start_pos);
+
+    player.move_down();
+    player.commit_move();
+
+    let new_pos = Position { row: 7, col: 8 };
+    player.reset_position(new_pos);
+
+    assert_eq!(player.pos, new_pos);
+    assert_eq!(player.get_pending_move(), None);
+}
+
+#[test]
+fn test_player_inventory_duplicates() {
+    let mut player = Player::new();
+
+    player.add_item(ItemType::Key);
+    player.add_item(ItemType::Sword);
+    player.add_item(ItemType::Key);
+
+    let key_count = player
+        .inventory
+        .iter()
+        .filter(|&&item| item == ItemType::Key)
+        .count();
+
+    assert_eq!(key_count, 2);
+
+    player.remove_item(ItemType::Key);
+
+    assert!(player.has_item(ItemType::Key));
+
+    player.remove_item(ItemType::Key);
+
+    assert!(!player.has_item(ItemType::Key));
+    assert!(player.has_item(ItemType::Sword));
+}
+
+#[test]
+fn test_player_pending_move_cancellation() {
+    let mut player = Player::new();
+    player.reset_position(Position { row: 5, col: 5 });
+
+    player.move_up();
+    player.move_right();
+    assert_eq!(player.get_pending_move(), Some(Position { row: 5, col: 6 }));
+
+    player.cancel_move();
+    assert_eq!(player.get_pending_move(), None);
+    assert_eq!(player.pos, Position { row: 5, col: 5 });
+}
+
+#[test]
+fn test_player_movement_sequence() {
+    let mut player = Player::new();
+    player.reset_position(Position { row: 10, col: 10 });
+
+    let movements = [
+        ("up", Position { row: 9, col: 10 }),
+        ("right", Position { row: 9, col: 11 }),
+        ("right", Position { row: 9, col: 12 }),
+        ("down", Position { row: 10, col: 12 }),
+        ("down", Position { row: 11, col: 12 }),
+        ("left", Position { row: 11, col: 11 }),
+    ];
+
+    for (direction, expected_pos) in movements.iter() {
+        match *direction {
+            "up" => player.move_up(),
+            "down" => player.move_down(),
+            "left" => player.move_left(),
+            "right" => player.move_right(),
+            _ => panic!("Unknown direction: {}", direction),
+        }
+
+        assert_eq!(player.get_pending_move(), Some(*expected_pos));
+        player.commit_move();
+        assert_eq!(player.pos, *expected_pos);
+    }
+}
+
+#[test]
+fn test_player_inventory_empty_check() {
+    let mut player = Player::new();
+
+    assert!(player.inventory.is_empty());
+
+    player.add_item(ItemType::Key);
+    assert!(!player.inventory.is_empty());
+
+    player.remove_item(ItemType::Key);
+    assert!(player.inventory.is_empty());
+}

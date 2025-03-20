@@ -462,3 +462,184 @@ impl Game {
         self.ui.render(&self.level, player);
     }
 }
+
+#[test]
+fn test_wall_collisions() {
+    let game = Game::new();
+
+    let mut wall_pos = None;
+
+    for row in 0..game.level.map_size.0 as usize {
+        for col in 0..game.level.map_size.1 as usize {
+            if game.level.map[row][col] == TileType::Wall {
+                wall_pos = Some(Position {
+                    row: row as i16,
+                    col: col as i16,
+                });
+                break;
+            }
+        }
+        if wall_pos.is_some() {
+            break;
+        }
+    }
+
+    if let Some(wall_pos) = wall_pos {
+        match game.check_collision(&wall_pos) {
+            CollisionType::Blocking(BlockingType::Wall) => {
+                // This is the expected behavior
+            }
+            other => panic!(
+                "Wall should return Blocking(Wall) collision, got {:?}",
+                other
+            ),
+        }
+    } else {
+        panic!("Couldn't find a wall in the level map");
+    }
+}
+
+#[test]
+fn test_enemy_collisions() {
+    let game = Game::new();
+
+    for enemy_pos in &game.level.enemies {
+        match game.check_collision(enemy_pos) {
+            CollisionType::Interactive(InteractiveType::Enemy) => {
+                // This is the expected behavior
+            }
+            other => panic!(
+                "Enemy should return Interactive(Enemy) collision, got {:?}",
+                other
+            ),
+        }
+    }
+}
+
+#[test]
+fn test_out_of_bounds_collisions() {
+    let game = Game::new();
+
+    let test_positions = [
+        Position { row: -1, col: 0 },
+        Position { row: 0, col: -1 },
+        Position {
+            row: game.level.map_size.0 as i16,
+            col: 0,
+        },
+        Position {
+            row: 0,
+            col: game.level.map_size.1 as i16,
+        },
+    ];
+
+    for pos in &test_positions {
+        match game.check_collision(pos) {
+            CollisionType::Blocking(_) => {
+                // This is the expected behavior
+            }
+            other => panic!(
+                "Out of bounds position should return Blocking collision, got {:?}",
+                other
+            ),
+        }
+    }
+}
+
+#[test]
+fn test_item_collisions() {
+    let mut map = vec![vec![TileType::Empty; 5]; 5];
+    map[2][2] = TileType::Key;
+
+    let level = Level {
+        map,
+        enemies: vec![],
+        player_start: Position { row: 0, col: 0 },
+        map_size: (5, 5),
+    };
+
+    let mut game = Game::new();
+    let _ = std::mem::replace(&mut game.level, level);
+
+    let key_pos = Position { row: 2, col: 2 };
+
+    match game.check_collision(&key_pos) {
+        CollisionType::Interactive(InteractiveType::Item(ItemType::Key)) => {
+            // This is the expected behavior
+        }
+        other => panic!(
+            "Key position should return Interactive(Item(Key)) collision, got {:?}",
+            other
+        ),
+    }
+}
+
+#[test]
+fn test_goal_collisions() {
+    if let Some(level) = Level::load(1) {
+        let mut goal_pos = None;
+
+        for row in 0..level.map_size.0 as usize {
+            for col in 0..level.map_size.1 as usize {
+                if level.map[row][col] == TileType::Goal {
+                    goal_pos = Some(Position {
+                        row: row as i16,
+                        col: col as i16,
+                    });
+                    break;
+                }
+            }
+            if goal_pos.is_some() {
+                break;
+            }
+        }
+
+        if let Some(goal_pos) = goal_pos {
+            let mut game = Game::new();
+            let _ = std::mem::replace(&mut game.level, level);
+
+            match game.check_collision(&goal_pos) {
+                CollisionType::Goal => {
+                    // This is the expected behavior
+                }
+                other => panic!(
+                    "Goal position should return Goal collision, got {:?}",
+                    other
+                ),
+            }
+        } else {
+            panic!("Couldn't find a goal in level 1");
+        }
+    } else {
+        panic!("Couldn't load level 1");
+    }
+}
+
+#[test]
+fn test_empty_space_collisions() {
+    let game = Game::new();
+    let player = game.init_player();
+
+    let directions = [(0, 1), (1, 0), (0, -1), (-1, 0)];
+
+    for (dy, dx) in &directions {
+        let test_pos = Position {
+            row: player.pos.row + dy,
+            col: player.pos.col + dx,
+        };
+
+        if let Some(tile) = game.level.get_tile(&test_pos) {
+            if tile == TileType::Empty {
+                match game.check_collision(&test_pos) {
+                    CollisionType::None => {
+                        // This is the expected behavior
+                        return;
+                    }
+                    other => panic!("Empty space should return None collision, got {:?}", other),
+                }
+            }
+        }
+    }
+
+    println!("Couldn't find an empty space near player start, skipping test");
+}

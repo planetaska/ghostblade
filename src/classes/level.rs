@@ -168,3 +168,94 @@ impl Level {
         }
     }
 }
+
+#[test]
+fn test_level_map_consistency() {
+    for level_num in 1..=10 {
+        if let Some(level) = Level::load(level_num) {
+            // Verify the map size is consistent with the actual map dimensions
+            assert_eq!(level.map.len() as u8, level.map_size.0);
+
+            // Verify all rows have the same length
+            for row in &level.map {
+                assert_eq!(row.len() as u8, level.map_size.1);
+            }
+
+            // Verify player start is within bounds
+            assert!(
+                level.player_start.row >= 0 && level.player_start.row < level.map_size.0 as i16
+            );
+            assert!(
+                level.player_start.col >= 0 && level.player_start.col < level.map_size.1 as i16
+            );
+        }
+    }
+}
+
+#[test]
+fn test_level_goal_exists() {
+    for level_num in 1..=10 {
+        if let Some(level) = Level::load(level_num) {
+            let mut has_goal = false;
+            let mut has_princess = false;
+
+            for row in &level.map {
+                for tile in row {
+                    if *tile == TileType::Goal {
+                        has_goal = true;
+                    } else if *tile == TileType::Princess {
+                        has_princess = true;
+                    }
+                }
+            }
+
+            assert!(
+                has_goal || has_princess,
+                "Level {} has no goal or princess",
+                level_num
+            );
+        }
+    }
+}
+
+#[test]
+fn test_set_tile_boundaries() {
+    if let Some(mut level) = Level::load(1) {
+        let valid_pos = Position { row: 1, col: 1 };
+        let original_tile = level.get_tile(&valid_pos).unwrap();
+
+        level.set_tile(&valid_pos, TileType::Key);
+        assert_eq!(level.get_tile(&valid_pos).unwrap(), TileType::Key);
+
+        level.set_tile(&valid_pos, original_tile);
+
+        let invalid_pos = Position {
+            row: level.map_size.0 as i16 + 5,
+            col: level.map_size.1 as i16 + 5,
+        };
+
+        level.set_tile(&invalid_pos, TileType::Key);
+
+        let negative_pos = Position { row: -1, col: -1 };
+        level.set_tile(&negative_pos, TileType::Key);
+    } else {
+        panic!("Could not load level 1 for testing");
+    }
+}
+
+#[test]
+fn test_get_tile_returns_none_for_invalid_positions() {
+    if let Some(level) = Level::load(1) {
+        let invalid_pos = Position {
+            row: level.map_size.0 as i16 + 1,
+            col: level.map_size.1 as i16 + 1,
+        };
+
+        assert!(level.get_tile(&invalid_pos).is_none());
+
+        let negative_pos = Position { row: -1, col: -1 };
+        assert!(level.get_tile(&negative_pos).is_none());
+    } else {
+        panic!("Could not load level 1 for testing");
+    }
+}

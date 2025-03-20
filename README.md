@@ -33,8 +33,8 @@ Emojis may appear as half-width due to Unicode classifications, terminal behavio
 However, if the screen appears misaligned, try changing the terminal font for better compatibility.
 
 ## How to Play
-- Use `WASD` keys to move
-- `Q` to quit the game
+- Use `WASD` or arrow keys to move
+- `Q` or `Esc` to quit the game
 
 ### Map Legend
 

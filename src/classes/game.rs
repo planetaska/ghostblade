@@ -272,6 +272,15 @@ impl Game {
             self.level.set_tile(pos, TileType::Empty);
             player.remove_item(ItemType::Bomb);
             self.ui.show_message("  💥 The rock crumbles to dust 💥");
+
+            for row in 0..self.level.map_size.0 as usize {
+                for col in 0..self.level.map_size.1 as usize {
+                    if self.level.map[row][col] == TileType::Tomb {
+                        self.level.map[row][col] = TileType::Cottage;
+                    }
+                }
+            }
+
             player.cancel_move();
         } else {
             player.cancel_move();
